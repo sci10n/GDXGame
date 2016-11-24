@@ -2,19 +2,18 @@ package me.sciion.gdx;
 
 import com.badlogic.gdx.ApplicationAdapter;
 
-import me.sciion.gdx.game.render.Render3d;
+import me.sciion.gdx.game.render.Renderer;
 import me.sciion.gdx.level.Level;
-import me.sciion.gdx.level.entity.Entity;
 
 public class MyGame extends ApplicationAdapter {
 
     //Render3d render;
-    Render3d render;
+    Renderer render;
     Level level;
     @Override
     public void create() {
 	level = new Level();
-	render = new Render3d();
+	render = new Renderer();
 	level.setup();
     }
 
@@ -26,6 +25,6 @@ public class MyGame extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-	render.dispose();
+	level.dispose();
     }	
 }

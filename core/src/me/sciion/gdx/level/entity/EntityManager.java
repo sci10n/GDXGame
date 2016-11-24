@@ -1,12 +1,14 @@
 package me.sciion.gdx.level.entity;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 
-import me.sciion.gdx.game.render.Render3d;
+import me.sciion.gdx.game.render.Renderer;
 
 public class EntityManager {
 
     private Array<Entity> entities;
+    
     private static int nextId = 1;
     
     public EntityManager(){
@@ -42,7 +44,7 @@ public class EntityManager {
 	}
     }
     
-    public void render(Render3d render){
+    public void render(Renderer render){
 	for(Entity e: entities){
 	    e.render(render);
 	}
@@ -54,4 +56,6 @@ public class EntityManager {
 	}
 	entities.clear();
     }
+    
+
 }

@@ -3,7 +3,7 @@ package me.sciion.gdx.level.entity;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
-import me.sciion.gdx.game.render.Render3d;
+import me.sciion.gdx.game.render.Renderer;
 import me.sciion.gdx.level.entity.component.Component;
 import me.sciion.gdx.level.entity.component.ComponentType;
 
@@ -18,30 +18,36 @@ public class Entity {
     }
 
     public void setup(){
-	for(Component c: components){
+	for(int i = 0; i < components.size; i++){
+	    Component c = components.get(i);
 	    c.setup();
 	}
+
+
     }
     
     public void dispose(){
-	for(Component c: components){
+	for(int i = 0; i < components.size; i++){
+	    Component c = components.get(i);
 	    c.dispose();
 	}
     }
     
     public void tick(){
-	for(Component c: components){
+	for(int i = 0; i < components.size; i++){
+	    Component c = components.get(i);
 	    c.tick();
 	}
     }
     
-    public void render(Render3d render){
+    public void render(Renderer render){
 	for(Component c: components){
 	    c.render(render);
 	}
     }
     
     public void addComponent(Component c){
+	c.setParent(this);
 	components.add(c);
     }
     
@@ -51,23 +57,15 @@ public class Entity {
     
     @SuppressWarnings("unchecked")
     public <T extends Component> T getComponent(ComponentType type){
-	for(Component c: components){
+	for(int i = 0; i < components.size; i++){
+	    Component c = components.get(i);
 	    if(c.getType() == type){
 		return (T) c;
 	    }
 	}
 	return null;
     }
-    
-    public static Entity fromJSON(String s){
-	Json json = new Json();
-	return json.fromJson(Entity.class,s);
-    }
-    
-    public String toJSON(){
-	Json json = new Json();
-	return json.toJson(this);
-    }
+   
     
     public int getID(){
 	return id;

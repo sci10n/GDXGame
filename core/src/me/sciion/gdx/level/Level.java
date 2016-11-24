@@ -1,9 +1,12 @@
 package me.sciion.gdx.level;
 
-import me.sciion.gdx.game.render.Render3d;
+import com.badlogic.gdx.utils.Json;
+
+import me.sciion.gdx.game.render.Renderer;
 import me.sciion.gdx.level.entity.Entity;
 import me.sciion.gdx.level.entity.EntityManager;
 import me.sciion.gdx.level.entity.component.BlockRender;
+import me.sciion.gdx.level.entity.component.PlayerInput;
 import me.sciion.gdx.level.event.EventChannel;
 
 public class Level {
@@ -21,10 +24,11 @@ public class Level {
 	Entity dummy1 = entities.createEntity();
 	dummy1.addComponent(new BlockRender(0,0,0));
 	dummy1.setup();
-	entities.addEntity(dummy1);
 	
+	entities.addEntity(dummy1);
 	Entity dummy2 = entities.createEntity();
 	dummy2.addComponent(new BlockRender(2,0,0));
+	dummy2.addComponent(new PlayerInput());
 	dummy2.setup();
 	entities.addEntity(dummy2);
 	
@@ -35,7 +39,7 @@ public class Level {
     }
     
     // Stuff that is drawn
-    public void render(Render3d render){
+    public void render(Renderer render){
 	entities.render(render);
     }
     
