@@ -1,7 +1,5 @@
 package me.sciion.gdx.level.entity.component;
 
-import com.badlogic.gdx.utils.Json;
-
 import me.sciion.gdx.game.render.Renderer;
 import me.sciion.gdx.level.entity.Entity;
 

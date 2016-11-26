@@ -9,7 +9,6 @@ public class EntityManager {
 
     private Array<Entity> entities;
     
-    private static int nextId = 1;
     
     public EntityManager(){
 	entities = new Array<Entity>();
@@ -17,6 +16,7 @@ public class EntityManager {
     
     public void addEntity(Entity entity){
 	if(!entities.contains(entity, false)){
+	    entity.setup();
 	    entities.add(entity);
 	}
     }
@@ -33,8 +33,17 @@ public class EntityManager {
 	}
     }
     
+    public Entity getEntityById(String id){
+	for(int i = 0; i < entities.size; i++){
+	    if(entities.get(i).getID().equals(id)){
+		return entities.get(i);
+	    }
+	}
+	return null;
+    }
+    
     public Entity createEntity(){
-	Entity e = new Entity(nextId++);
+	Entity e = new Entity("Undefiend_Id");
 	return e;
     }
     

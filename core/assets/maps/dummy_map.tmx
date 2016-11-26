@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="1" tileheight="1" nextobjectid="21">
+ <objectgroup name="structures">
+  <object id="2" x="0" y="0" width="40" height="1"/>
+  <object id="3" x="0" y="1" width="1" height="39"/>
+  <object id="4" x="1" y="39" width="39" height="1"/>
+  <object id="5" x="39" y="1" width="1" height="38"/>
+  <object id="6" x="8" y="1" width="3" height="12"/>
+  <object id="7" x="17" y="10" width="10" height="3"/>
+  <object id="8" x="27" y="5" width="3" height="8"/>
+  <object id="9" x="26" y="27" width="3" height="7"/>
+  <object id="10" x="29" y="27" width="6" height="3"/>
+  <object id="12" x="26" y="34" width="9" height="3"/>
+  <object id="13" x="3" y="22" width="10" height="4"/>
+  <object id="14" x="1" y="16" width="3" height="3"/>
+  <object id="15" x="13" y="22" width="8" height="4"/>
+  <object id="16" x="8" y="16" width="3" height="3"/>
+  <object id="19" x="25" y="15" width="3" height="9"/>
+ </objectgroup>
+ <objectgroup name="markers">
+  <object id="20" name="player_spawn" type="marker" x="25" y="8" width="1" height="1"/>
+ </objectgroup>
+</map>

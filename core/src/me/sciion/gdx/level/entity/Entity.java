@@ -1,7 +1,6 @@
 package me.sciion.gdx.level.entity;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
 
 import me.sciion.gdx.game.render.Renderer;
 import me.sciion.gdx.level.entity.component.Component;
@@ -10,9 +9,9 @@ import me.sciion.gdx.level.entity.component.ComponentType;
 public class Entity {
 
     private Array<Component> components;
-    private int id;
+    private String id;
     
-    public Entity(int id){
+    public Entity(String id){
 	this.id = id;
 	components = new Array<Component>();
     }
@@ -22,8 +21,6 @@ public class Entity {
 	    Component c = components.get(i);
 	    c.setup();
 	}
-
-
     }
     
     public void dispose(){
@@ -67,7 +64,7 @@ public class Entity {
     }
    
     
-    public int getID(){
+    public String getID(){
 	return id;
     }
 }
