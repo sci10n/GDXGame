@@ -10,7 +10,8 @@ public class DesktopLauncher {
 		config.width = 800;
 		config.height = 600;
 		config.vSyncEnabled = false;
-		config.foregroundFPS = 0;
-		new LwjglApplication(new MyGame(), config);
+		config.foregroundFPS = 60;
+		
+		new LwjglApplication(new MyGame(false), config);
 	}
 }

@@ -1,14 +1,14 @@
 package me.sciion.gdx.level.entity;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
 
 import me.sciion.gdx.game.render.Renderer;
+import me.sciion.gdx.level.entity.component.ComponentType;
 
 public class EntityManager {
 
     private Array<Entity> entities;
-    
+    private static long count = 0;
     
     public EntityManager(){
 	entities = new Array<Entity>();
@@ -18,6 +18,8 @@ public class EntityManager {
 	if(!entities.contains(entity, false)){
 	    entity.setup();
 	    entities.add(entity);
+	} else{
+	    System.out.println("Entity already in entity manager");
 	}
     }
     
@@ -43,9 +45,15 @@ public class EntityManager {
     }
     
     public Entity createEntity(){
-	Entity e = new Entity("Undefiend_Id");
+	Entity e = new Entity("Undefiend_Id"+count++,this);
 	return e;
     }
+    
+    public Entity createEntity(String id){
+	Entity e = new Entity(id,this);
+	return e;
+    }
+    
     
     public void tick(){
 	for(Entity e: entities){
@@ -64,6 +72,16 @@ public class EntityManager {
 	    e.dispose();
 	}
 	entities.clear();
+    }
+    
+    public Array<Entity> getEntitiesWithComponent(ComponentType type){
+	Array<Entity> e = new Array<Entity>();
+	for(int i = 0; i < entities.size; i++){
+	    if(entities.get(i).getComponent(type) != null){
+		e.add(entities.get(i));
+	    }
+	}
+	return e;
     }
     
 

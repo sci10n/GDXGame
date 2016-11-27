@@ -10,9 +10,11 @@ public class Entity {
 
     private Array<Component> components;
     private String id;
+    private EntityManager manager;
     
-    public Entity(String id){
+    public Entity(String id, EntityManager manager){
 	this.id = id;
+	this.manager = manager;
 	components = new Array<Component>();
     }
 
@@ -45,6 +47,7 @@ public class Entity {
     
     public void addComponent(Component c){
 	c.setParent(this);
+	c.setup();
 	components.add(c);
     }
     
@@ -63,8 +66,19 @@ public class Entity {
 	return null;
     }
    
+    public EntityManager getManager(){
+	return manager;
+    }
     
     public String getID(){
 	return id;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+	if(obj instanceof Entity){
+	    return ((Entity)obj).getID().equals(id);
+	}
+        return false;
     }
 }

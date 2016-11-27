@@ -65,6 +65,10 @@ project(":core") {
         compile "com.kotcrab.vis:vis-runtime:0.3.2"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.3"
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.3"
+        compile "com.esotericsoftware:kryo:3.0.1"
+		compile ("com.esotericsoftware:kryonet:2.22.0-RC1") {
+		     exclude module : 'kryo'
+		}
     }
 }
 

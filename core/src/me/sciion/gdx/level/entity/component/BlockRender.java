@@ -15,29 +15,14 @@ import me.sciion.gdx.game.render.Renderer;
 public class BlockRender extends Component{
 
 
-    protected Vector3 position;
-    protected Vector2 dimensions;
+
     protected Color color;
     
     private ModelInstance instance;
     private Model model;
-
     
-    public BlockRender(float x, float y, float z, float w, float h, Color color) {
+    public BlockRender(Color color) {
 	this.color = color;
-	ModelBuilder b = new ModelBuilder();
-	Material m =  new Material(ColorAttribute.createDiffuse(color));
-	
-	model = b.createBox(w, 2.0f, h, m,  Usage.Position | Usage.Normal);
-  	position = new Vector3(x,y,z);
-  	dimensions = new Vector2(w,h);
-  	instance = new ModelInstance(model);
-    }
-    
-    public BlockRender(float x, float y, float z, float w, float h) {
-	position = new Vector3(x,y,z);
-	dimensions = new Vector2(w,h);
-	color = Color.WHITE;
     }
     
     @Override
@@ -52,7 +37,18 @@ public class BlockRender extends Component{
 
     @Override
     public void render(Renderer render) {
-	instance.transform.setToTranslation(position.cpy().add(dimensions.x/2.0f, 0, dimensions.y/2.0f)); 
+	SpatialComponent s = parent.getComponent(ComponentType.Spatial);
+	if(s == null)
+	    return;
+	if(instance == null){
+		ModelBuilder b = new ModelBuilder();
+		Material m =  new Material(ColorAttribute.createDiffuse(color));
+		
+		model = b.createBox(s.dimensions.x, 2.0f, s.dimensions.y, m,  Usage.Position | Usage.Normal);
+	  	instance = new ModelInstance(model);
+	}
+
+	instance.transform.setToTranslation(s.position.cpy().add(s.dimensions.x/2.0f, 0, s.dimensions.y/2.0f)); 
 	render.batch.render(instance,render.env);
     }
 
@@ -64,14 +60,6 @@ public class BlockRender extends Component{
     @Override
     public void dispose() {
 	model.dispose();
-    }
-
-    public Vector3 getPosition() {
-        return position;
-    }
-
-    public Vector2 getDimensions() {
-        return dimensions;
     }
 
     

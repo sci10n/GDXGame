@@ -44,7 +44,7 @@ public class Renderer {
 	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 	camera.update();
 	batch.begin(camera);
-	level.render(this);
+	//level.render(this);
 	batch.end();
     }
     

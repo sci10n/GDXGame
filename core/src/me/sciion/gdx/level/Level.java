@@ -1,34 +1,65 @@
 package me.sciion.gdx.level;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObject;
+import com.artemis.Archetype;
+import com.artemis.ArchetypeBuilder;
+import com.artemis.ComponentMapper;
+import com.artemis.World;
+import com.artemis.WorldConfiguration;
+import com.artemis.WorldConfigurationBuilder;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Vector2;
 
-import me.sciion.gdx.game.render.Renderer;
-import me.sciion.gdx.level.entity.Entity;
-import me.sciion.gdx.level.entity.EntityManager;
-import me.sciion.gdx.level.entity.component.BlockRender;
-import me.sciion.gdx.level.entity.component.ComponentType;
-import me.sciion.gdx.level.entity.component.PlayerInput;
-import me.sciion.gdx.level.event.EventChannel;
+import me.sciion.gdx.level.components.CollisionComponent;
+import me.sciion.gdx.level.components.ModelComponent;
+import me.sciion.gdx.level.components.PlayerInputComponent;
+import me.sciion.gdx.level.components.SpatialComponent;
+import me.sciion.gdx.level.components.VelocityComponent;
+import me.sciion.gdx.level.system.PhysicsSystem;
+import me.sciion.gdx.level.system.PlayerInputSystem;
+import me.sciion.gdx.level.system.RenderSystem;
 
 public class Level {
 
-    private EntityManager entities;
-    private EventChannel levelChannel;
+    // --== Worlds ==-- //
+    private World world;
+    private com.badlogic.gdx.physics.box2d.World physics_world;
 
+    // --== Mappers ==-- //
+    private ComponentMapper<SpatialComponent> spatialMapper;
+    private ComponentMapper<ModelComponent> modelMapper;
+    
+    // --== Archetypes ==-- //
+    Archetype characterArchetype;
+    Archetype playerArchetype;
+    
     public Level() {
-	entities = new EntityManager();
-	levelChannel = new EventChannel();
-    }
-
-    private interface MarkerGenerator {
-	Entity operation(MapObject object);
+	// --== Worlds ==-- //
+	WorldConfiguration world_config = new WorldConfigurationBuilder()
+		.with(new PlayerInputSystem(), new RenderSystem(), new PhysicsSystem())
+		.build();
+	world = new World(world_config);
+	physics_world = new com.badlogic.gdx.physics.box2d.World(Vector2.Zero, true);
+	
+	// --== Mappers ==-- //
+	spatialMapper = world.getMapper(SpatialComponent.class);
+	modelMapper = world.getMapper(ModelComponent.class);
+	
+	// --== Archetypes ==-- //
+	characterArchetype = new ArchetypeBuilder()
+		.add(SpatialComponent.class)
+		.add(ModelComponent.class)
+		.add(CollisionComponent.class)
+		.add(VelocityComponent.class)
+		.build(world);
+	playerArchetype = new ArchetypeBuilder(characterArchetype)
+		.add(PlayerInputComponent.class)
+		.build(world);
     }
 
     // Load from file
     public void load(TiledMap levelMap) {
+	/*
 	MapLayer structural_level = levelMap.getLayers().get("structures");
 	MapLayer marker_level = levelMap.getLayers().get("markers");
 	System.out.println(structural_level.toString());
@@ -36,26 +67,29 @@ public class Level {
 	
 	System.out.println("--===|Structures|===--");
 	for (MapObject o : structural_level.getObjects()) {
-	    Entity e = entities.createEntity();
+	   // Entity e = entities.createEntity();
 	    float x = (Float) o.getProperties().get("x");
 	    float y = (Float) o.getProperties().get("y");
 	    float w = (Float) o.getProperties().get("width");
 	    float h = (Float) o.getProperties().get("height");
-	    e.addComponent(new BlockRender(x, 0, y, w, h, Color.DARK_GRAY));
-	    entities.addEntity(e);
+	   // e.addComponent(new SpatialComponent(x, 0, y, w, h));
+	   // e.addComponent(new BlockRender(Color.DARK_GRAY));
+	   // e.addComponent(new CollisionComponent());
+	   // entities.addEntity(e);
 	}
 	
 	System.out.println("--===|Markers|===--");
 	MarkerGenerator spawn = (o) -> {
 	    if (o.getName().equals("player_spawn")) {
 		System.out.println("player_spawn marker!");
-		Entity e = new Entity("player_spawn");
+		//Entity e = entities.createEntity("player_spawn");
 		float x = (Float) o.getProperties().get("x");
 		float y = (Float) o.getProperties().get("y");
 		float w = (Float) o.getProperties().get("width");
 		float h = (Float) o.getProperties().get("height");
-		e.addComponent(new BlockRender(x, 0, y, w, h, Color.CHARTREUSE));
-		entities.addEntity(e);
+		//e.addComponent(new SpatialComponent(x, 0, y, w, h));
+		//e.addComponent(new BlockRender(Color.CHARTREUSE));
+		//entities.addEntity(e);
 	    }
 	    return null;
 	};
@@ -63,51 +97,33 @@ public class Level {
 	for (MapObject o : marker_level.getObjects()) {
 	    spawn.operation(o);
 	}
+	*/
     }
 
     // Stuff that should be run once
     public void setup() {
 	System.out.println("Setup level " + toString());
 	
-	Entity ps = entities.getEntityById("player_spawn");
-	if(ps != null){
-	    BlockRender br = ps.getComponent(ComponentType.BlockRender);
-	    Entity playerEntity = new Entity("player");
-	    float spawn_x = br.getPosition().x;
-	    float spawn_y = br.getPosition().z;
-	    playerEntity.addComponent(new BlockRender(spawn_x,0,spawn_y,1.0f,1.0f,Color.LIGHT_GRAY));
-	    
-	    PlayerInput input = new PlayerInput();
-	    input.setup();
-	    playerEntity.addComponent(input);
-	    
-	    entities.addEntity(playerEntity);
-	}
-
-	/*
-	 * Entity dummy1 = entities.createEntity(); dummy1.addComponent(new
-	 * BlockRender(0,0,0)); dummy1.setup();
-	 * 
-	 * entities.addEntity(dummy1); Entity dummy2 = entities.createEntity();
-	 * dummy2.addComponent(new BlockRender(2,0,0)); dummy2.addComponent(new
-	 * PlayerInput()); dummy2.setup(); entities.addEntity(dummy2);
-	 * 
-	 * Entity dummy3 = entities.createEntity(); dummy3.addComponent(new
-	 * BlockRender(5,0,2)); dummy3.setup(); entities.addEntity(dummy3);
-	 */
+	int playerEntity = world.create(playerArchetype);
+	spatialMapper.get(playerEntity).create(0, 0, 0, 1, 1, 1);
+	modelMapper.get(playerEntity).create(1, 1, 1);
+	
+	int dummy1 = world.create(characterArchetype);
+	spatialMapper.get(dummy1).create(2, 0, 0, 1, 1, 1);
+	modelMapper.get(dummy1).create(1, 1, 1);
+	
     }
-
+    
+    
     // Stuff that is drawn
-    public void render(Renderer render) {
-	entities.render(render);
+    public void process() {
+	world.setDelta(Gdx.graphics.getDeltaTime());
+	world.process();
     }
 
-    // Stuff that runs every frame
-    public void tick() {
-	entities.tick();
-    }
 
     public void dispose() {
-	entities.dispose();
+	//entities.dispose();
     }
+
 }
