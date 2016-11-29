@@ -38,6 +38,9 @@ public class PlayerInputSystem extends IteratingSystem {
         else if(Gdx.input.isKeyPressed(Keys.A)){
             body.setLinearVelocity(5, body.getLinearVelocity().y);    
         }
+        if(Gdx.input.isKeyJustPressed(Keys.SPACE)){
+            System.out.println("interact!");
+        }
         
     }
 

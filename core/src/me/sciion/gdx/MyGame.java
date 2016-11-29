@@ -1,16 +1,9 @@
 package me.sciion.gdx;
 
-import com.badlogic.gdx.ApplicationAdapter;import com.kotcrab.vis.runtime.spriter.Player;
+import com.badlogic.gdx.ApplicationAdapter;
 
-import me.sciion.gdx.game.render.Renderer;
 import me.sciion.gdx.level.Level;
 import me.sciion.gdx.level.LevelLoader;
-import me.sciion.gdx.level.entity.Entity;
-import me.sciion.gdx.level.entity.EntityManager;
-import me.sciion.gdx.level.entity.component.PlayerInput;
-import me.sciion.gdx.level.entity.component.SpatialComponent;
-import me.sciion.gdx.netcode.GameClient;
-import me.sciion.gdx.netcode.GameServer;
 
 public class MyGame extends ApplicationAdapter {
 

@@ -1,7 +1,5 @@
 package me.sciion.gdx.level;
 
-import java.awt.FlowLayout;
-
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.ComponentMapper;
@@ -9,10 +7,13 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalMaterial;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -30,6 +31,7 @@ import me.sciion.gdx.level.components.VelocityComponent;
 import me.sciion.gdx.level.system.PhysicsSystem;
 import me.sciion.gdx.level.system.PlayerInputSystem;
 import me.sciion.gdx.level.system.RenderSystem;
+import me.sciion.gdx.utils.ModelConstructer;
 
 public class Level {
 
@@ -103,13 +105,15 @@ public class Level {
 	System.out.println(marker_level.toString());
 	
 	System.out.println("--===|Structures|===--");
-	for(int z = 0; z < 25; z++){
-	    for(int x = 0; x < 25;x++){
+	for(int z = 0; z < (int)levelMap.getProperties().get("height"); z++){
+	    for(int x = 0; x <  (int)levelMap.getProperties().get("width");x++){
 		    float w = 1.0f;
 		    float d = 1.0f;
 		    int s = world.create(floorArchetype);
 		    spatialMapper.get(s).create(x+w/2.0f, 0, z+d/2.0f, w, 0, d);
-		    modelMapper.get(s).create(w, 0, d);
+		    modelMapper.get(s).instance = ModelConstructer.create(w, 0, d,new Texture(Gdx.files.internal("tile1.png")));
+
+
 	    }
 	}
 	for (MapObject o : structural_level.getObjects()) {
@@ -122,7 +126,7 @@ public class Level {
 	    int s = world.create(structureArchetype);
 	    System.out.println(x + " " + z + " " + w + " " + d);
 	    spatialMapper.get(s).create(x, 0, z, w, 1, d);
-	    modelMapper.get(s).create(w, 1, d);
+	    modelMapper.get(s).instance = ModelConstructer.create(w, 1, d,new Texture(Gdx.files.internal("tiled3.png")));
 	    physicsMapper.get(s).create(createBody(x, z, w, d, BodyType.StaticBody));
 	}
 	
@@ -176,7 +180,10 @@ public class Level {
 	int playerEntity = world.create(playerArchetype);
 	Vector3 p = spatialMapper.get(player_spawn_entity).position;
 	spatialMapper.get(playerEntity).create(p.x, 0, p.z, 0.8f, 1, 0.8f);
-	modelMapper.get(playerEntity).create(0.8f, 1, 0.8f);
+	Texture texture = new Texture(Gdx.files.internal("arrow1.png"));
+
+	//Decal decal = Decal.newDecal(new TextureRegion(texture),true);
+	 modelMapper.get(playerEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f, new Texture(Gdx.files.internal("grid2.png")));
 	physicsMapper.get(playerEntity).create(createBody(p.x, p.z, 0.8f, 0.8f, BodyType.DynamicBody));
 	
 	
