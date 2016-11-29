@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.decals.DecalMaterial;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -111,7 +112,7 @@ public class Level {
 		    float d = 1.0f;
 		    int s = world.create(floorArchetype);
 		    spatialMapper.get(s).create(x+w/2.0f, 0, z+d/2.0f, w, 0, d);
-		    modelMapper.get(s).instance = ModelConstructer.create(w, 0, d,new Texture(Gdx.files.internal("tile1.png")));
+		    modelMapper.get(s).instance = ModelConstructer.create(w, 0, d,new Texture(Gdx.files.internal("tiled2.png")));
 
 
 	    }
@@ -125,8 +126,10 @@ public class Level {
 	    z = z + d/2.0f;
 	    int s = world.create(structureArchetype);
 	    System.out.println(x + " " + z + " " + w + " " + d);
-	    spatialMapper.get(s).create(x, 0, z, w, 1, d);
-	    modelMapper.get(s).instance = ModelConstructer.create(w, 1, d,new Texture(Gdx.files.internal("tiled3.png")));
+	    float h = MathUtils.random(0.9f,1.5f);
+	    spatialMapper.get(s).create(x, 0, z, w, h, d);
+	    modelMapper.get(s).instance = ModelConstructer.create(w, h, d,new Texture(Gdx.files.internal("tiled3.png")));
+	    
 	    physicsMapper.get(s).create(createBody(x, z, w, d, BodyType.StaticBody));
 	}
 	

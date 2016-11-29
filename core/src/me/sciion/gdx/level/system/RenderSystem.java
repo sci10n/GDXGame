@@ -6,6 +6,7 @@ import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -15,7 +16,9 @@ import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.math.Vector3;
 
 import me.sciion.gdx.level.components.ModelComponent;
 import me.sciion.gdx.level.components.PlayerInputComponent;
@@ -31,7 +34,8 @@ public class RenderSystem extends EntitySystem {
     private ModelBatch batch;
     private DecalBatch decal_batch;
     private Environment environemnt;
-
+    
+    private PointLight playerLight;
     private int focus;
 
     private CameraInputController controller;
@@ -47,8 +51,10 @@ public class RenderSystem extends EntitySystem {
 	batch = new ModelBatch();
 	decal_batch = new DecalBatch(new CameraGroupStrategy(camera));
 	environemnt = new Environment();
-	environemnt.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-	environemnt.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+	environemnt.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.1f, 0.1f, 0.1f, 0.8f));
+	environemnt.add(new DirectionalLight().set(0.1f, 0.1f, 0.1f, -1f, -0.3f, -0.2f));
+	playerLight = new PointLight().set(new Color(0.5f, 0.6f, 0.8f, 1.0f), Vector3.Z, 10.0f);
+	environemnt.add(playerLight);
 	controller = new CameraInputController(camera);
 	Gdx.input.setInputProcessor(controller);
     }
@@ -56,7 +62,7 @@ public class RenderSystem extends EntitySystem {
     @Override
     protected void processSystem() {
 	Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-	Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	Gdx.gl.glClearColor(0.01f, 0.01f, 0.1f, 1.0f);
 	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 	// Ugly and should be changed!
@@ -64,6 +70,7 @@ public class RenderSystem extends EntitySystem {
 	if (pm.getSafe(focus) != null) {
 	    float x = sm.get(focus).position.x;
 	    float z = sm.get(focus).position.z;
+	    playerLight.setPosition(x, 1.1f, z);
 	    camera.position.x = x;
 	    camera.position.z = z;
 	    camera.lookAt(x, 0, z+0.5f);

@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="21" height="21" tilewidth="1" tileheight="1" nextobjectid="447">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="21" height="21" tilewidth="1" tileheight="1" nextobjectid="474">
  <tileset firstgid="1" name="tiled2" tilewidth="1" tileheight="1" tilecount="256" columns="16">
   <image source="../tiled2.png" width="16" height="16"/>
  </tileset>
  <objectgroup name="structures">
-  <object id="291" x="13" y="3" width="1" height="1"/>
-  <object id="292" x="14" y="3" width="1" height="1"/>
-  <object id="293" x="15" y="3" width="1" height="1"/>
-  <object id="294" x="16" y="3" width="1" height="1"/>
-  <object id="296" x="17" y="3" width="1" height="1"/>
   <object id="318" x="12" y="17" width="1" height="1"/>
   <object id="319" x="11" y="17" width="1" height="1"/>
   <object id="320" x="10" y="17" width="1" height="1"/>
@@ -20,28 +15,10 @@
   <object id="329" x="8" y="17" width="1" height="1"/>
   <object id="330" x="9" y="17" width="1" height="1"/>
   <object id="331" x="17" y="16" width="1" height="1"/>
-  <object id="332" x="17" y="15" width="1" height="1"/>
-  <object id="333" x="17" y="14" width="1" height="1"/>
-  <object id="334" x="17" y="13" width="1" height="1"/>
-  <object id="335" x="17" y="12" width="1" height="1"/>
-  <object id="336" x="17" y="11" width="1" height="1"/>
-  <object id="339" x="17" y="10" width="1" height="1"/>
-  <object id="340" x="17" y="9" width="1" height="1"/>
-  <object id="341" x="8" y="3" width="1" height="1"/>
-  <object id="342" x="12" y="3" width="1" height="1"/>
-  <object id="344" x="9" y="3" width="1" height="1"/>
-  <object id="345" x="11" y="3" width="1" height="1"/>
   <object id="346" x="3" y="3" width="1" height="1"/>
-  <object id="347" x="7" y="3" width="1" height="1"/>
   <object id="348" x="5" y="3" width="1" height="1"/>
   <object id="349" x="4" y="3" width="1" height="1"/>
   <object id="350" x="6" y="3" width="1" height="1"/>
-  <object id="354" x="3" y="4" width="1" height="1"/>
-  <object id="355" x="17" y="4" width="1" height="1"/>
-  <object id="356" x="17" y="5" width="1" height="1"/>
-  <object id="357" x="17" y="6" width="1" height="1"/>
-  <object id="358" x="17" y="7" width="1" height="1"/>
-  <object id="359" x="17" y="8" width="1" height="1"/>
   <object id="360" x="17" y="17" width="1" height="1"/>
   <object id="361" x="16" y="17" width="1" height="1"/>
   <object id="362" x="15" y="17" width="1" height="1"/>
@@ -127,6 +104,31 @@
   <object id="444" x="20" y="5" width="1" height="1"/>
   <object id="445" x="20" y="2" width="1" height="1"/>
   <object id="446" x="20" y="7" width="1" height="1"/>
+  <object id="447" x="6" y="7" width="1" height="1"/>
+  <object id="448" x="5" y="7" width="1" height="1"/>
+  <object id="449" x="4" y="7" width="1" height="1"/>
+  <object id="450" x="3" y="7" width="1" height="1"/>
+  <object id="451" x="7" y="3" width="1" height="1"/>
+  <object id="454" x="3" y="4" width="1" height="1"/>
+  <object id="455" x="3" y="5" width="1" height="1"/>
+  <object id="456" x="3" y="6" width="1" height="1"/>
+  <object id="457" x="7" y="4" width="1" height="1"/>
+  <object id="458" x="7" y="5" width="1" height="1"/>
+  <object id="459" x="7" y="6" width="1" height="1"/>
+  <object id="460" x="7" y="7" width="1" height="1"/>
+  <object id="461" x="3" y="16" width="1" height="1"/>
+  <object id="462" x="17" y="15" width="1" height="1"/>
+  <object id="463" x="18" y="15" width="1" height="1"/>
+  <object id="464" x="19" y="15" width="1" height="1"/>
+  <object id="465" x="3" y="15" width="1" height="1"/>
+  <object id="466" x="3" y="14" width="1" height="1"/>
+  <object id="467" x="3" y="13" width="1" height="1"/>
+  <object id="468" x="3" y="12" width="1" height="1"/>
+  <object id="469" x="3" y="11" width="1" height="1"/>
+  <object id="470" x="14" y="6" width="1" height="1"/>
+  <object id="471" x="15" y="7" width="1" height="1"/>
+  <object id="472" x="16" y="8" width="1" height="1"/>
+  <object id="473" x="17" y="9" width="1" height="1"/>
  </objectgroup>
  <objectgroup name="markers">
   <object id="289" name="player_spawn" x="7" y="12" width="1" height="1"/>
