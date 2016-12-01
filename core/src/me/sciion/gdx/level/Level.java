@@ -7,28 +7,29 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
-import com.badlogic.gdx.graphics.g3d.decals.DecalMaterial;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
+import me.sciion.gdx.level.components.AutoInputComponent;
 import me.sciion.gdx.level.components.CollisionComponent;
 import me.sciion.gdx.level.components.ModelComponent;
+import me.sciion.gdx.level.components.NetworkedInput;
 import me.sciion.gdx.level.components.PlayerInputComponent;
 import me.sciion.gdx.level.components.SpatialComponent;
-import me.sciion.gdx.level.components.VelocityComponent;
+import me.sciion.gdx.level.system.AutoInputSystem;
+import me.sciion.gdx.level.system.NetworkSystem;
 import me.sciion.gdx.level.system.PhysicsSystem;
 import me.sciion.gdx.level.system.PlayerInputSystem;
 import me.sciion.gdx.level.system.RenderSystem;
@@ -44,59 +45,76 @@ public class Level {
     private ComponentMapper<SpatialComponent> spatialMapper;
     private ComponentMapper<ModelComponent> modelMapper;
     private ComponentMapper<CollisionComponent> physicsMapper;
-    
+    private ComponentMapper<AutoInputComponent> inputMapper;
+    private ComponentMapper<NetworkedInput> networkMapper;
     // --==( Archetypes )==-- //
     Archetype characterArchetype;
     Archetype playerArchetype;
+    Archetype npcArchetype;
     Archetype structureArchetype;
     Archetype markerArchetype;
     Archetype floorArchetype;
-    
+
     // --==( Map )==-- //
     private int player_spawn_entity;
-    interface MarkerGenerator{
+    private int playerEntity;
+
+    interface MarkerGenerator {
 	void process(MapObject o);
     }
     
+    // --==( Networking )==-- 
+    public Array<Integer> networkedEntities;
+
     public Level() {
 	// --==( Worlds )==-- //
 	WorldConfiguration world_config = new WorldConfigurationBuilder()
-		.with(new PlayerInputSystem(), new RenderSystem(), new PhysicsSystem())
-		.build();
+		.with(new PlayerInputSystem(), new RenderSystem(), new PhysicsSystem(), new AutoInputSystem(), new NetworkSystem()).build();
 	world = new World(world_config);
 	physics_world = new com.badlogic.gdx.physics.box2d.World(Vector2.Zero, true);
-	
+
 	// --==( Mappers )==-- //
 	spatialMapper = world.getMapper(SpatialComponent.class);
-	modelMapper   = world.getMapper(ModelComponent.class);
+	modelMapper = world.getMapper(ModelComponent.class);
 	physicsMapper = world.getMapper(CollisionComponent.class);
+	inputMapper = world.getMapper(AutoInputComponent.class);
+	networkMapper = world.getMapper(NetworkedInput.class);
 	
 	// --==( Archetypes )==-- //
 	characterArchetype = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(ModelComponent.class)
 		.add(CollisionComponent.class)
-		.add(VelocityComponent.class)
 		.build(world);
 	playerArchetype = new ArchetypeBuilder(characterArchetype)
-		.add(PlayerInputComponent.class)
-		.build(world);
+		.add(PlayerInputComponent.class).build(world);
 	structureArchetype = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(CollisionComponent.class)
-		.add(ModelComponent.class)
-		.build(world);
-	
+		.add(ModelComponent.class).build(world);
 	floorArchetype = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(ModelComponent.class)
 		.build(world);
-	
 	markerArchetype = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.build(world);
+	npcArchetype= new ArchetypeBuilder()
+		.add(SpatialComponent.class)
+		.add(ModelComponent.class)
+		.add(CollisionComponent.class)
+		.add(AutoInputComponent.class)
+		.build(world);
+	
+	networkedEntities = new Array<Integer>();
     }
-
+    
+    public void addNetworked(int id){
+	if(!networkedEntities.contains(id, true)){
+	    networkedEntities.add(id);
+	}
+    }
+    
     // Load from file
     public void load(TiledMap levelMap) {
 	
@@ -104,17 +122,15 @@ public class Level {
 	MapLayer marker_level = levelMap.getLayers().get("markers");
 	System.out.println(structural_level.toString());
 	System.out.println(marker_level.toString());
-	
+
 	System.out.println("--===|Structures|===--");
-	for(int z = 0; z < (int)levelMap.getProperties().get("height"); z++){
-	    for(int x = 0; x <  (int)levelMap.getProperties().get("width");x++){
-		    float w = 1.0f;
-		    float d = 1.0f;
-		    int s = world.create(floorArchetype);
-		    spatialMapper.get(s).create(x+w/2.0f, 0, z+d/2.0f, w, 0, d);
-		    modelMapper.get(s).instance = ModelConstructer.create(w, 0, d,new Texture(Gdx.files.internal("tiled2.png")));
-
-
+	for (int z = 0; z < (int) levelMap.getProperties().get("height"); z++) {
+	    for (int x = 0; x < (int) levelMap.getProperties().get("width"); x++) {
+		float w = 1.0f;
+		float d = 1.0f;
+		int s = world.create(floorArchetype);
+		spatialMapper.get(s).create(x + w / 2.0f, 0, z + d / 2.0f, w, 0, d);
+		modelMapper.get(s).instance = ModelConstructer.create(w, 0, d,Color.GRAY);
 	    }
 	}
 	for (MapObject o : structural_level.getObjects()) {
@@ -122,77 +138,85 @@ public class Level {
 	    float z = (Float) o.getProperties().get("y");
 	    float w = (Float) o.getProperties().get("width");
 	    float d = (Float) o.getProperties().get("height");
-	    x = x + w/2.0f;
-	    z = z + d/2.0f;
+	    x = x + w / 2.0f;
+	    z = z + d / 2.0f;
 	    int s = world.create(structureArchetype);
-	    System.out.println(x + " " + z + " " + w + " " + d);
-	    float h = MathUtils.random(0.9f,1.5f);
+	    float h = 1.0f;
 	    spatialMapper.get(s).create(x, 0, z, w, h, d);
-	    modelMapper.get(s).instance = ModelConstructer.create(w, h, d,new Texture(Gdx.files.internal("tiled3.png")));
-	    
+	    modelMapper.get(s).instance = ModelConstructer.create(w, h, d,Color.DARK_GRAY);
 	    physicsMapper.get(s).create(createBody(x, z, w, d, BodyType.StaticBody));
 	}
-	
+
 	System.out.println("--===|Markers|===--");
-	MarkerGenerator spawn = (o) -> {
+	MarkerGenerator player_spawn = (o) -> {
 	    if (o.getName().equals("player_spawn")) {
 		System.out.println("player_spawn marker!");
-		 float x = (Float) o.getProperties().get("x");
-		    float z = (Float) o.getProperties().get("y");
-		    float w = (Float) o.getProperties().get("width");
-		    float d = (Float) o.getProperties().get("height");
-		    x = x + w/2.0f;
-		    z = z + d/2.0f;
-		    player_spawn_entity = world.create(markerArchetype);
-		    spatialMapper.get(player_spawn_entity).create(x, 0, z, w, 0, d);
+		float x = (Float) o.getProperties().get("x");
+		float z = (Float) o.getProperties().get("y");
+		float w = (Float) o.getProperties().get("width");
+		float d = (Float) o.getProperties().get("height");
+		x = x + w / 2.0f;
+		z = z + d / 2.0f;
+		player_spawn_entity = world.create(markerArchetype);
+		spatialMapper.get(player_spawn_entity).create(x, 0, z, w, 0, d);
+		
+		playerEntity = world.create(playerArchetype);
+		Vector3 p = spatialMapper.get(player_spawn_entity).position;
+		spatialMapper.get(playerEntity).create(p.x, 0, p.z, 0.8f, 1, 0.8f);
+
+		// Decal decal = Decal.newDecal(new TextureRegion(texture),true);
+		modelMapper.get(playerEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f, Color.LIME);
+		physicsMapper.get(playerEntity).create(createBody(p.x, p.z, 0.8f, 0.8f, BodyType.DynamicBody));
 	    }
 	};
-	
+
+	MarkerGenerator npc_spawn = (o) -> {
+	    if (o.getName().equals("npc_spawn")) {
+		System.out.println("npc_spawn marker!");
+		float x = (Float) o.getProperties().get("x");
+		float z = (Float) o.getProperties().get("y");
+		float w = (Float) o.getProperties().get("width");
+		float d = (Float) o.getProperties().get("height");
+		x = x + w / 2.0f;
+		z = z + d / 2.0f;
+		int npcEntity = world.create(npcArchetype);
+		spatialMapper.get(npcEntity).create(x, 0, z, 0.8f, 1, 0.8f);
+		modelMapper.get(npcEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f,Color.NAVY);
+		physicsMapper.get(npcEntity).create(createBody(x, z, 0.8f, 0.8f, BodyType.DynamicBody));
+		inputMapper.get(npcEntity);
+	    }
+	};
+
 	for (MapObject o : marker_level.getObjects()) {
-	    spawn.process(o);
+	    player_spawn.process(o);
+	    npc_spawn.process(o);
 	}
-	
     }
     
-
-    
-    public Body createBody(float x,float z, float w, float d, BodyType type){    
+    public Body createBody(float x, float z, float w, float d, BodyType type) {
 	BodyDef def = new BodyDef();
 	def.type = type;
 	def.position.set(x, z);
-	
 	Body body = physics_world.createBody(def);
-	
 	PolygonShape shape = new PolygonShape();
-	shape.setAsBox(w/2.0f, d/2.0f);
-	
+	shape.setAsBox(w / 2.0f, d / 2.0f);
 	FixtureDef fixDef = new FixtureDef();
 	fixDef.shape = shape;
 	fixDef.density = 1f;
-	//fixDef.friction = 20.0f;
+	// fixDef.friction = 20.0f;
 	Fixture f = body.createFixture(fixDef);
 	shape.dispose();
 	body.setFixedRotation(true);
 	return body;
     }
-    
+
     // Stuff that should be run once
     public void setup() {
 	System.out.println("Setup level " + toString());
-	
-	int playerEntity = world.create(playerArchetype);
-	Vector3 p = spatialMapper.get(player_spawn_entity).position;
-	spatialMapper.get(playerEntity).create(p.x, 0, p.z, 0.8f, 1, 0.8f);
-	Texture texture = new Texture(Gdx.files.internal("arrow1.png"));
 
-	//Decal decal = Decal.newDecal(new TextureRegion(texture),true);
-	 modelMapper.get(playerEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f, new Texture(Gdx.files.internal("grid2.png")));
-	physicsMapper.get(playerEntity).create(createBody(p.x, p.z, 0.8f, 0.8f, BodyType.DynamicBody));
-	
 	
     }
-    
-    
+
     // Stuff that is drawn
     public void process() {
 	physics_world.step(Gdx.graphics.getDeltaTime(), 6, 2);
@@ -200,9 +224,13 @@ public class Level {
 	world.process();
     }
 
-
     public void dispose() {
-	//entities.dispose();
+	// entities.dispose();
+    }
+
+    // Used to access from KryoStasis
+    public ComponentMapper<NetworkedInput> getNetworkMapper() {
+        return networkMapper;
     }
 
 }
