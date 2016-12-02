@@ -26,10 +26,12 @@ public class NetworkSystem extends IteratingSystem {
 	NetworkedInput in = nm.get(e);
 	SpatialComponent sc = sm.get(e);
 	CollisionComponent cc = cm.get(e);
-	InputMessage message = in.inbound.removeFirst();
-	if (message.type == Input.MOVE) {
-	    Body b = cc.body;
-	    b.setLinearVelocity(message.velocity.x, message.velocity.z);
+	if(in.inbound.size != 0){
+		InputMessage message = in.inbound.removeFirst();
+		if (message.type == Input.MOVE) {
+		    Body b = cc.body;
+		    b.setLinearVelocity(message.velocity.x, message.velocity.z);
+		}
 	}
     }
 

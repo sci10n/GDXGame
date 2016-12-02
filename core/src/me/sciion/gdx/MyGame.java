@@ -19,15 +19,17 @@ public class MyGame extends ApplicationAdapter {
     
     @Override
     public void create() {
-	loader = new LevelLoader();
-	level = loader.load("maps/dummy_map.tmx");
-	level.setup();
 	networking = new KryoStasis();
 	if( networking.createServer()){
-	   
+	   System.out.println("Server");
 	}else{
+	    System.out.println("Client");
 	    networking.createClient("127.0.0.1");
 	}
+	loader = new LevelLoader();
+	level = loader.load("maps/dummy_map.tmx",networking);
+	level.setup();
+
 
     }
     
@@ -35,7 +37,7 @@ public class MyGame extends ApplicationAdapter {
     @Override
     public void render() {
 	//System.out.println(Gdx.graphics.getFramesPerSecond());
-	networking.processInbound(level.getNetworkMapper());
+	networking.processInbound(level.getNetworkMapper(),level);
 	level.process();
 	networking.processOutbound();
     }

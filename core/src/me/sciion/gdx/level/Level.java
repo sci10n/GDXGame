@@ -1,5 +1,7 @@
 package me.sciion.gdx.level;
 
+import java.util.HashMap;
+
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
 import com.artemis.ComponentMapper;
@@ -8,7 +10,6 @@ import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -17,10 +18,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Queue;
 
 import me.sciion.gdx.level.components.AutoInputComponent;
 import me.sciion.gdx.level.components.CollisionComponent;
@@ -33,7 +35,11 @@ import me.sciion.gdx.level.system.NetworkSystem;
 import me.sciion.gdx.level.system.PhysicsSystem;
 import me.sciion.gdx.level.system.PlayerInputSystem;
 import me.sciion.gdx.level.system.RenderSystem;
+import me.sciion.gdx.utils.KryoStasis;
 import me.sciion.gdx.utils.ModelConstructer;
+import me.sciion.gdx.utils.KryoMessage.InputMessage;
+import me.sciion.gdx.utils.KryoMessage.NetworkMessage;
+import me.sciion.gdx.utils.KryoMessage.NewEntity;
 
 public class Level {
 
@@ -54,7 +60,8 @@ public class Level {
     Archetype structureArchetype;
     Archetype markerArchetype;
     Archetype floorArchetype;
-
+    Archetype networkedEntity;
+    
     // --==( Map )==-- //
     private int player_spawn_entity;
     private int playerEntity;
@@ -64,15 +71,30 @@ public class Level {
     }
     
     // --==( Networking )==-- 
-    public Array<Integer> networkedEntities;
+    private int externalEntityID = -1;
+    
+    public int getNextUID(){
+	if(externalEntityID == -1){
+	    externalEntityID = (networking.netowrkID + 1000) * 100;
+	}
+	return externalEntityID++;
+    }
+    
+    public HashMap<Integer,Integer> externalToInternal;
+    public HashMap<Integer,Integer> internalToExternal;
 
-    public Level() {
+    private KryoStasis networking;
+    public Queue<NetworkMessage> inbound;
+    public Level(KryoStasis networking) {
+	this.networking = networking;
 	// --==( Worlds )==-- //
 	WorldConfiguration world_config = new WorldConfigurationBuilder()
-		.with(new PlayerInputSystem(), new RenderSystem(), new PhysicsSystem(), new AutoInputSystem(), new NetworkSystem()).build();
+		.with(new PlayerInputSystem(networking,this), new RenderSystem(), new PhysicsSystem(), new AutoInputSystem(), new NetworkSystem()).build();
 	world = new World(world_config);
 	physics_world = new com.badlogic.gdx.physics.box2d.World(Vector2.Zero, true);
 
+	
+	inbound = new Queue<NetworkMessage>();
 	// --==( Mappers )==-- //
 	spatialMapper = world.getMapper(SpatialComponent.class);
 	modelMapper = world.getMapper(ModelComponent.class);
@@ -105,14 +127,22 @@ public class Level {
 		.add(CollisionComponent.class)
 		.add(AutoInputComponent.class)
 		.build(world);
+	networkedEntity = new ArchetypeBuilder()
+		.add(SpatialComponent.class)
+		.add(ModelComponent.class)
+		.add(CollisionComponent.class)
+		.add(NetworkedInput.class)
+		.build(world);
 	
-	networkedEntities = new Array<Integer>();
+	externalToInternal = new HashMap<Integer,Integer>();
+	internalToExternal = new HashMap<Integer,Integer>();
+
     }
     
-    public void addNetworked(int id){
-	if(!networkedEntities.contains(id, true)){
-	    networkedEntities.add(id);
-	}
+    public void addNetworked(int internalID, int externalID){
+	System.out.println("added to netowrked " + internalID + " " + externalID);
+	externalToInternal.put(externalID, internalID);
+	internalToExternal.put(internalID, externalID);
     }
     
     // Load from file
@@ -161,12 +191,18 @@ public class Level {
 		spatialMapper.get(player_spawn_entity).create(x, 0, z, w, 0, d);
 		
 		playerEntity = world.create(playerArchetype);
+		addNetworked(playerEntity, getNextUID());
+
 		Vector3 p = spatialMapper.get(player_spawn_entity).position;
 		spatialMapper.get(playerEntity).create(p.x, 0, p.z, 0.8f, 1, 0.8f);
 
 		// Decal decal = Decal.newDecal(new TextureRegion(texture),true);
 		modelMapper.get(playerEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f, Color.LIME);
 		physicsMapper.get(playerEntity).create(createBody(p.x, p.z, 0.8f, 0.8f, BodyType.DynamicBody));
+		NewEntity message = new NewEntity();
+		message.id = playerEntity;
+		message.init = p;
+		networking.addOutbound(message, this);
 	    }
 	};
 
@@ -213,15 +249,54 @@ public class Level {
     // Stuff that should be run once
     public void setup() {
 	System.out.println("Setup level " + toString());
-
 	
     }
 
     // Stuff that is drawn
     public void process() {
+	    processInbound();
+
 	physics_world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 	world.setDelta(Gdx.graphics.getDeltaTime());
 	world.process();
+    }
+
+    
+    private void processInbound() {
+	while(inbound.size > 0){
+	    NetworkMessage message = inbound.removeFirst();
+	    if(message instanceof NewEntity){
+
+		NewEntity ne = (NewEntity) message;
+		System.out.println("Level recv new entity message with external id: " + ne.id);
+
+		float x = ne.init.x;
+		float z = ne.init.z;
+		int networkEntity = world.create(networkedEntity);
+		spatialMapper.get(networkEntity).create(x, 0, z, 0.8f, 1, 0.8f);
+		modelMapper.get(networkEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f,Color.RED);
+		physicsMapper.get(networkEntity).create(createBody(x, z, 0.8f, 0.8f, BodyType.DynamicBody));
+		inputMapper.get(networkEntity);
+		addNetworked(networkEntity,ne.id);
+	    }
+	    else if(message instanceof InputMessage){
+		InputMessage im = (InputMessage) message;
+		System.out.println("Level recv input message with external id: " + im.entityId);
+		try{
+			int id = externalToInternal.get(im.entityId);
+			if(networkMapper.getSafe(id) != null){
+				networkMapper.getSafe(id).inbound.addLast(im);
+			}
+			else{
+			    System.err.println("Could not resolv external id");
+			}
+		}catch(NullPointerException e){
+		    e.printStackTrace();
+		    return;
+		}
+		
+	    }
+	}
     }
 
     public void dispose() {
