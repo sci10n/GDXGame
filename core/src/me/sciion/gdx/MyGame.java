@@ -13,23 +13,26 @@ public class MyGame extends ApplicationAdapter {
     LevelLoader loader;
     KryoStasis networking;
     public boolean server;
-    public MyGame(boolean server){
+    private String serverIP;
+    public MyGame(boolean server, String serverIP){
 	this.server = server;
+	this.serverIP = serverIP;
     }
     
     @Override
     public void create() {
 	networking = new KryoStasis();
-	if( networking.createServer()){
+	if( server && networking.createServer()){
 	   System.out.println("Server");
-	}else{
+	}else if(!server){
 	    System.out.println("Client");
-	    networking.createClient("127.0.0.1");
+	    networking.createClient(serverIP);
 	}
 	loader = new LevelLoader();
 	level = loader.load("maps/dummy_map.tmx",networking);
 	level.setup();
-
+	
+	
 
     }
     
@@ -37,7 +40,7 @@ public class MyGame extends ApplicationAdapter {
     @Override
     public void render() {
 	//System.out.println(Gdx.graphics.getFramesPerSecond());
-	networking.processInbound(level.getNetworkMapper(),level);
+	networking.processInbound(level);
 	level.process();
 	networking.processOutbound();
     }

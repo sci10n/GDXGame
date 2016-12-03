@@ -3,8 +3,7 @@ package me.sciion.gdx.utils.KryoMessage;
 import com.artemis.Archetype;
 import com.badlogic.gdx.math.Vector3;
 
-public class NewEntity extends NetworkMessage{
+public class EntityCreated extends EntityMessage{
 
-    public int id;
-    public Vector3 init;
+    public Vector3 poistion;
 }

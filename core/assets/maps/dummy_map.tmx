@@ -22,18 +22,5 @@
  </objectgroup>
  <objectgroup name="markers">
   <object id="289" name="player_spawn" x="7" y="12" width="1" height="1"/>
-  <object id="476" name="npc_spawn" x="13" y="12" width="1" height="1"/>
-  <object id="479" name="npc_spawn" x="13" y="11" width="1" height="1"/>
-  <object id="480" name="npc_spawn" x="12" y="4" width="1" height="1"/>
-  <object id="481" name="npc_spawn" x="13" y="13" width="1" height="1"/>
-  <object id="482" name="npc_spawn" x="13" y="14" width="1" height="1"/>
-  <object id="483" name="npc_spawn" x="14" y="13" width="1" height="1"/>
-  <object id="484" name="npc_spawn" x="14" y="14" width="1" height="1"/>
-  <object id="485" name="npc_spawn" x="15" y="13" width="1" height="1"/>
-  <object id="486" name="npc_spawn" x="15" y="14" width="1" height="1"/>
-  <object id="487" name="npc_spawn" x="15" y="11" width="1" height="1"/>
-  <object id="488" name="npc_spawn" x="15" y="12" width="1" height="1"/>
-  <object id="489" name="npc_spawn" x="14" y="11" width="1" height="1"/>
-  <object id="490" name="npc_spawn" x="14" y="12" width="1" height="1"/>
  </objectgroup>
 </map>

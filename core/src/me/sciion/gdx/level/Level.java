@@ -1,9 +1,8 @@
 package me.sciion.gdx.level;
 
-import java.util.HashMap;
-
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
+import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -21,7 +20,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 
 import me.sciion.gdx.level.components.AutoInputComponent;
@@ -31,15 +29,16 @@ import me.sciion.gdx.level.components.NetworkedInput;
 import me.sciion.gdx.level.components.PlayerInputComponent;
 import me.sciion.gdx.level.components.SpatialComponent;
 import me.sciion.gdx.level.system.AutoInputSystem;
-import me.sciion.gdx.level.system.NetworkSystem;
+import me.sciion.gdx.level.system.NetworkInputSystem;
 import me.sciion.gdx.level.system.PhysicsSystem;
 import me.sciion.gdx.level.system.PlayerInputSystem;
 import me.sciion.gdx.level.system.RenderSystem;
 import me.sciion.gdx.utils.KryoStasis;
 import me.sciion.gdx.utils.ModelConstructer;
-import me.sciion.gdx.utils.KryoMessage.InputMessage;
-import me.sciion.gdx.utils.KryoMessage.NetworkMessage;
-import me.sciion.gdx.utils.KryoMessage.NewEntity;
+import me.sciion.gdx.utils.KryoMessage.EntityCreated;
+import me.sciion.gdx.utils.KryoMessage.EntityInput;
+import me.sciion.gdx.utils.KryoMessage.EntityMessage;
+import me.sciion.gdx.utils.KryoMessage.EntitySync;
 
 public class Level {
 
@@ -71,30 +70,21 @@ public class Level {
     }
     
     // --==( Networking )==-- 
-    private int externalEntityID = -1;
+    public KryoStasis networking;
+    public Queue<EntityMessage> inbound;
+    public Queue<EntityMessage> outbound;
     
-    public int getNextUID(){
-	if(externalEntityID == -1){
-	    externalEntityID = (networking.netowrkID + 1000) * 100;
-	}
-	return externalEntityID++;
-    }
-    
-    public HashMap<Integer,Integer> externalToInternal;
-    public HashMap<Integer,Integer> internalToExternal;
-
-    private KryoStasis networking;
-    public Queue<NetworkMessage> inbound;
     public Level(KryoStasis networking) {
 	this.networking = networking;
+	networking.setLevel(this);
 	// --==( Worlds )==-- //
-	WorldConfiguration world_config = new WorldConfigurationBuilder()
-		.with(new PlayerInputSystem(networking,this), new RenderSystem(), new PhysicsSystem(), new AutoInputSystem(), new NetworkSystem()).build();
+	WorldConfiguration world_config = new WorldConfigurationBuilder().with(new PlayerInputSystem(this), new RenderSystem(), new PhysicsSystem(), new AutoInputSystem(), new NetworkInputSystem()).build();
 	world = new World(world_config);
 	physics_world = new com.badlogic.gdx.physics.box2d.World(Vector2.Zero, true);
 
 	
-	inbound = new Queue<NetworkMessage>();
+	inbound = new Queue<EntityMessage>();
+	outbound = new Queue<EntityMessage>();
 	// --==( Mappers )==-- //
 	spatialMapper = world.getMapper(SpatialComponent.class);
 	modelMapper = world.getMapper(ModelComponent.class);
@@ -133,17 +123,9 @@ public class Level {
 		.add(CollisionComponent.class)
 		.add(NetworkedInput.class)
 		.build(world);
-	
-	externalToInternal = new HashMap<Integer,Integer>();
-	internalToExternal = new HashMap<Integer,Integer>();
 
     }
-    
-    public void addNetworked(int internalID, int externalID){
-	System.out.println("added to netowrked " + internalID + " " + externalID);
-	externalToInternal.put(externalID, internalID);
-	internalToExternal.put(internalID, externalID);
-    }
+
     
     // Load from file
     public void load(TiledMap levelMap) {
@@ -191,18 +173,14 @@ public class Level {
 		spatialMapper.get(player_spawn_entity).create(x, 0, z, w, 0, d);
 		
 		playerEntity = world.create(playerArchetype);
-		addNetworked(playerEntity, getNextUID());
 
 		Vector3 p = spatialMapper.get(player_spawn_entity).position;
 		spatialMapper.get(playerEntity).create(p.x, 0, p.z, 0.8f, 1, 0.8f);
-
-		// Decal decal = Decal.newDecal(new TextureRegion(texture),true);
 		modelMapper.get(playerEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f, Color.LIME);
 		physicsMapper.get(playerEntity).create(createBody(p.x, p.z, 0.8f, 0.8f, BodyType.DynamicBody));
-		NewEntity message = new NewEntity();
-		message.id = playerEntity;
-		message.init = p;
-		networking.addOutbound(message, this);
+		
+		System.out.println("Registering player as networked entity");
+		networking.registerNewEntity(playerEntity, p);
 	    }
 	};
 
@@ -254,51 +232,52 @@ public class Level {
 
     // Stuff that is drawn
     public void process() {
-	    processInbound();
-
+	processInbound();
 	physics_world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 	world.setDelta(Gdx.graphics.getDeltaTime());
 	world.process();
+	processOutbound();
     }
 
     
     private void processInbound() {
 	while(inbound.size > 0){
-	    NetworkMessage message = inbound.removeFirst();
-	    if(message instanceof NewEntity){
-
-		NewEntity ne = (NewEntity) message;
-		System.out.println("Level recv new entity message with external id: " + ne.id);
-
-		float x = ne.init.x;
-		float z = ne.init.z;
-		int networkEntity = world.create(networkedEntity);
-		spatialMapper.get(networkEntity).create(x, 0, z, 0.8f, 1, 0.8f);
-		modelMapper.get(networkEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f,Color.RED);
-		physicsMapper.get(networkEntity).create(createBody(x, z, 0.8f, 0.8f, BodyType.DynamicBody));
-		inputMapper.get(networkEntity);
-		addNetworked(networkEntity,ne.id);
+	    EntityMessage message = inbound.removeFirst();
+	    if(message instanceof EntityCreated){
 	    }
-	    else if(message instanceof InputMessage){
-		InputMessage im = (InputMessage) message;
-		System.out.println("Level recv input message with external id: " + im.entityId);
-		try{
-			int id = externalToInternal.get(im.entityId);
-			if(networkMapper.getSafe(id) != null){
-				networkMapper.getSafe(id).inbound.addLast(im);
-			}
-			else{
-			    System.err.println("Could not resolv external id");
-			}
-		}catch(NullPointerException e){
-		    e.printStackTrace();
-		    return;
+	    else if(message instanceof EntityInput){
+		networkMapper.get(message.id).inbound.addLast(message);
+	    }
+	    else if(message instanceof EntitySync){
+		CollisionComponent c = physicsMapper.getSafe(message.id);
+		if(c == null){
+		    System.err.println("Entity to synch not pressent in level with id: " + message.id + "!");
+		}else{
+		    c.body.setTransform(((EntitySync) message).position.x, ((EntitySync) message).position.z, 0);
 		}
-		
 	    }
 	}
     }
+    
+    public int createNetworkedEntity(Vector3 postion){
+	System.out.println("Level: Create new network entity");
 
+	int entity = world.create(networkedEntity);
+	float x = postion.x;
+	float z = postion.z;
+	spatialMapper.get(entity).position = postion;
+	modelMapper.get(entity).instance = ModelConstructer.create(0.8f, 1, 0.8f,Color.NAVY);
+	physicsMapper.get(entity).create(createBody(x, z, 0.8f, 0.8f, BodyType.DynamicBody));
+	return entity;
+    }
+    
+    private void processOutbound(){
+	while(outbound.size > 0){
+	    EntityMessage message = outbound.removeFirst();
+	    networking.outbound.addLast(message);
+	}
+    }
+    
     public void dispose() {
 	// entities.dispose();
     }
@@ -306,6 +285,12 @@ public class Level {
     // Used to access from KryoStasis
     public ComponentMapper<NetworkedInput> getNetworkMapper() {
         return networkMapper;
+    }
+
+
+    public <T extends Component> T getComponent(Class<T> clazz, int internalID) {
+	T t = world.getMapper(clazz).getSafe(internalID);
+	return t;
     }
 
 }
