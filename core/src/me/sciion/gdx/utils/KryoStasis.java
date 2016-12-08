@@ -70,7 +70,7 @@ public class KryoStasis {
     }
     
     // Used when registering a new entity. called both on local and new entity propagation
-    public void registerNewEntity(int internalID, Vector3 position){
+    public int registerNewEntity(int internalID, Vector3 position){
 	System.out.println("New networked enitty registered with client: " + netowrkID);
 	int externalID = -1;
 	if(client != null){
@@ -82,13 +82,13 @@ public class KryoStasis {
 
 	externalToInternal.put(externalID, internalID);
 	internalToExternal.put(internalID, externalID); 
-	System.out.println(externalToInternal);
-	System.out.println(internalToExternal);
+	//System.out.println(externalToInternal);
+	//System.out.println(internalToExternal);
 	registeredEntities.add(internalID);
 	
 	// Send new Entity created message to server
 	if(client != null){
-	    System.out.println("Send new entity message to server!");
+	   // System.out.println("Send new entity message to server!");
 	    EntityCreated m = new EntityCreated();
 	    m.id = externalID;
 	    m.originator = netowrkID;
@@ -99,19 +99,20 @@ public class KryoStasis {
 	// Send new entity created message to clients
 	if(server != null){
 	    
-		   System.out.println("Construct new entity messages with eid:" + internalID);
+		  // System.out.println("Construct new entity messages with eid:" + internalID);
 		   EntityCreated m = new EntityCreated();
 		   m.id = internalToExternal.get(internalID);
 		   m.originator = netowrkID;
 		   m.poistion = level.getComponent(SpatialComponent.class,internalID).position;
 	 server.sendToAllTCP(m);
 	}
+	return externalID;
     }
     
     public void forceSynch(){
-	System.out.println("Synching all the clients with server coordinates...");
-	System.out.println(internalToExternal);
-	System.out.println(registeredEntities);
+	//System.out.println("Synching all the clients with server coordinates...");
+	//System.out.println(internalToExternal);
+	//System.out.println(registeredEntities);
 	for(int i : registeredEntities){
 	    System.out.println("ID: " + i);
 	    EntitySync synch = new EntitySync();
@@ -161,7 +162,7 @@ public class KryoStasis {
 			System.out.println("Entity with external id: " + em.id + " already exist in this world. Ignoring proppagation");
 			continue;
 		    }
-		    int internal = level.createNetworkedEntity(((EntityCreated) message).poistion);
+		    int internal = level.createNetworkedEntity(((EntityCreated) message).poistion, em.id);
 		    int external = em.id;
 		    System.out.println("Ex: " + external + " Int: " + internal);
 		    externalToInternal.put(external, internal);

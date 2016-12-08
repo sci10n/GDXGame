@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -176,11 +178,13 @@ public class Level {
 
 		Vector3 p = spatialMapper.get(player_spawn_entity).position;
 		spatialMapper.get(playerEntity).create(p.x, 0, p.z, 0.8f, 1, 0.8f);
-		modelMapper.get(playerEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f, Color.LIME);
+
 		physicsMapper.get(playerEntity).create(createBody(p.x, p.z, 0.8f, 0.8f, BodyType.DynamicBody));
 		
 		System.out.println("Registering player as networked entity");
-		networking.registerNewEntity(playerEntity, p);
+		int i = networking.registerNewEntity(playerEntity, p);
+		RandomXS128 r = new RandomXS128(i);
+		modelMapper.get(playerEntity).instance = ModelConstructer.create(0.8f, 1, 0.8f, new Color(r.nextFloat(),r.nextFloat(),r.nextFloat(),1.0f));
 	    }
 	};
 
@@ -259,14 +263,16 @@ public class Level {
 	}
     }
     
-    public int createNetworkedEntity(Vector3 postion){
+    public int createNetworkedEntity(Vector3 postion, int connection){
 	System.out.println("Level: Create new network entity");
 
 	int entity = world.create(networkedEntity);
 	float x = postion.x;
 	float z = postion.z;
 	spatialMapper.get(entity).position = postion;
-	modelMapper.get(entity).instance = ModelConstructer.create(0.8f, 1, 0.8f,Color.NAVY);
+	System.out.println(Integer.hashCode(connection));
+	RandomXS128 r = new RandomXS128(connection);
+	modelMapper.get(entity).instance = ModelConstructer.create(0.8f, 1, 0.8f, new Color(r.nextFloat(),r.nextFloat(),r.nextFloat(),1.0f));
 	physicsMapper.get(entity).create(createBody(x, z, 0.8f, 0.8f, BodyType.DynamicBody));
 	return entity;
     }
