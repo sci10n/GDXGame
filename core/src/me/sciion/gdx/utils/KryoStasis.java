@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
@@ -59,8 +60,17 @@ public class KryoStasis {
 
     
     private ExternalId  waitForResponse(){
+	
+		client.sendTCP(ClientRequests.NextExternalId);
+	
+	
 	while(lastResponse == null){
-	    
+		try {
+		    client.update(100);
+		} catch (IOException e1) {
+		    // TODO Auto-generated catch block
+		    e1.printStackTrace();
+		}
 	}
 	System.out.println("Client: got response from server: " + lastResponse);
 	
@@ -74,7 +84,6 @@ public class KryoStasis {
 	System.out.println("New networked enitty registered with client: " + netowrkID);
 	int externalID = -1;
 	if(client != null){
-	    client.sendTCP(ClientRequests.NextExternalId);
 	    externalID =  waitForResponse().id;
 	} else{
 	    externalID = getExternalID();
@@ -135,7 +144,6 @@ public class KryoStasis {
 	    if(message instanceof EntityMessage){
 		EntityMessage em = (EntityMessage) message;
 		em.id = internalToExternal.get(em.id);
-		System.out.println("Send outbound with id: " + em.id);
 	    }
 	    if (server != null) {
 		server.sendToAllTCP(message);
