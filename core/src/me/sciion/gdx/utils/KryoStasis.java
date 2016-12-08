@@ -39,7 +39,7 @@ public class KryoStasis {
     private Server server;
     private Client client;
     private int external = -1;
-
+    private int nextExternal = -1;
     private HashMap<Integer,Integer> externalToInternal;
     private HashMap<Integer,Integer> internalToExternal;
     
@@ -59,32 +59,13 @@ public class KryoStasis {
     }
 
     
-    private ExternalId  waitForResponse(){
-	
-		client.sendTCP(ClientRequests.NextExternalId);
-	
-	
-	while(lastResponse == null){
-		try {
-		    client.update(100);
-		} catch (IOException e1) {
-		    // TODO Auto-generated catch block
-		    e1.printStackTrace();
-		}
-	}
-	System.out.println("Client: got response from server: " + lastResponse);
-	
-	ExternalId r = lastResponse;
-	lastResponse = null;
-	return r;
-    }
-    
     // Used when registering a new entity. called both on local and new entity propagation
     public int registerNewEntity(int internalID, Vector3 position){
 	System.out.println("New networked enitty registered with client: " + netowrkID);
 	int externalID = -1;
 	if(client != null){
-	    externalID =  waitForResponse().id;
+	    if(lastResponse != null)
+	    externalID = lastResponse.id;
 	} else{
 	    externalID = getExternalID();
 	}
@@ -231,6 +212,9 @@ public class KryoStasis {
 		  m.originator = netowrkID;
 		  m.poistion = level.getComponent(SpatialComponent.class,i).position;
 		 connection.sendTCP(m);
+		 ExternalId id = new ExternalId();
+		 id.id = getExternalID();
+		 connection.sendTCP(id);
 		}
 	    }
 
