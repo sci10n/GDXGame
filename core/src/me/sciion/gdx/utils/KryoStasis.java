@@ -83,7 +83,7 @@ public class KryoStasis {
 	    m.id = externalID;
 	    m.originator = netowrkID;
 	    m.poistion = position;
-	    client.sendTCP(m);
+	    client.sendUDP(m);
 	}
 	
 	// Send new entity created message to clients
@@ -94,7 +94,7 @@ public class KryoStasis {
 		   m.id = internalToExternal.get(internalID);
 		   m.originator = netowrkID;
 		   m.poistion = level.getComponent(SpatialComponent.class,internalID).position;
-	 server.sendToAllTCP(m);
+	 server.sendToAllUDP(m);
 	}
 	return externalID;
     }
@@ -127,9 +127,9 @@ public class KryoStasis {
 		em.id = internalToExternal.get(em.id);
 	    }
 	    if (server != null) {
-		server.sendToAllTCP(message);
+		server.sendToAllUDP(message);
 	    } else if (client != null) {
-		client.sendTCP(message);
+		client.sendUDP(message);
 	    }
 	}
     }
@@ -138,7 +138,7 @@ public class KryoStasis {
 	while (inbounds.size > 0) {
 	    NetworkMessage message = inbounds.removeFirst();
 	    if (server != null) {
-		server.sendToAllExceptTCP(message.originator, message);
+		server.sendToAllExceptUDP(message.originator, message);
 	    }
 	    
 	    
@@ -211,10 +211,10 @@ public class KryoStasis {
 		  m.id = internalToExternal.get(i);
 		  m.originator = netowrkID;
 		  m.poistion = level.getComponent(SpatialComponent.class,i).position;
-		 connection.sendTCP(m);
+		 connection.sendUDP(m);
 		 ExternalId id = new ExternalId();
 		 id.id = getExternalID();
-		 connection.sendTCP(id);
+		 connection.sendUDP(id);
 		}
 	    }
 
@@ -235,7 +235,7 @@ public class KryoStasis {
 		    if(r == ClientRequests.NextExternalId){
 			ExternalId id = new ExternalId();
 			id.id = getExternalID();
-			connection.sendTCP(id);
+			connection.sendUDP(id);
 		    }
 		}
 	    }
