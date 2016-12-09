@@ -22,6 +22,7 @@ public class PlayerInputSystem extends IteratingSystem {
     private ComponentMapper<CollisionComponent> cm;
 
     private Level level;
+
     public PlayerInputSystem(Level level) {
 	super(Aspect.all(PlayerInputComponent.class, SpatialComponent.class, CollisionComponent.class));
 	this.level = level;
@@ -29,44 +30,38 @@ public class PlayerInputSystem extends IteratingSystem {
 
     @Override
     protected void process(int eid) {
-	
+
 	boolean dirty = false;
 	Body body = cm.get(eid).body;
 	body.setLinearVelocity(body.getLinearVelocity().cpy().scl(0.7f));
-	if(Gdx.input.isKeyPressed(Keys.W)){
+	if (Gdx.input.isKeyPressed(Keys.W)) {
 	    body.setLinearVelocity(body.getLinearVelocity().x, 5);
 	    dirty = true;
+	} else if (Gdx.input.isKeyPressed(Keys.S)) {
+	    body.setLinearVelocity(body.getLinearVelocity().x, -5);
+	    dirty = true;
+
 	}
-	else if(Gdx.input.isKeyPressed(Keys.S)){
-            body.setLinearVelocity(body.getLinearVelocity().x, -5);
+	if (Gdx.input.isKeyPressed(Keys.D)) {
+	    body.setLinearVelocity(-5, body.getLinearVelocity().y);
 	    dirty = true;
 
-        }
-        if(Gdx.input.isKeyPressed(Keys.D)){
-            body.setLinearVelocity(-5, body.getLinearVelocity().y);
+	} else if (Gdx.input.isKeyPressed(Keys.A)) {
+	    body.setLinearVelocity(5, body.getLinearVelocity().y);
 	    dirty = true;
+	}
+	if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+	    System.out.println("interact!");
+	}
 
-        }
-        else if(Gdx.input.isKeyPressed(Keys.A)){
-            body.setLinearVelocity(5, body.getLinearVelocity().y);    
-            dirty = true;
-        }
-        if(Gdx.input.isKeyJustPressed(Keys.SPACE)){
-            System.out.println("interact!");
-            level.networking.forceSynch();
-        }
-        
-        if(dirty){
-            Vector3 velocity = new Vector3(body.getLinearVelocity().x, 0, body.getLinearVelocity().y);
-            EntityInput message = new EntityInput();
-            message.id = eid;
-            message.type = Input.MOVE;
-            message.velocity = velocity;
-            level.outbound.addLast(message);
-        }
+	if (dirty) {
+	    Vector3 velocity = new Vector3(body.getLinearVelocity().x, 0, body.getLinearVelocity().y);
+	    EntityInput message = new EntityInput();
+	    message.id = eid;
+	    message.type = Input.MOVE;
+	    message.velocity = velocity;
+	    level.enqueOutbound(message);
+	}
     }
-
-
-
 
 }

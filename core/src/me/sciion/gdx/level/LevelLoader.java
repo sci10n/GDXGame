@@ -4,8 +4,6 @@ import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
-import me.sciion.gdx.utils.KryoStasis;
-
 public class LevelLoader {
 
     private TmxMapLoader loader;
@@ -15,10 +13,10 @@ public class LevelLoader {
 	levelMap = new TiledMap();
     }
     
-    public Level load(String path, KryoStasis networking){
+    public Level load(String path){
 	loader = new TmxMapLoader(new InternalFileHandleResolver());
 	levelMap = loader.load(path);
-	Level level = new Level(networking);
+	Level level = new Level();
 	level.load(levelMap);
 	return level;
     }

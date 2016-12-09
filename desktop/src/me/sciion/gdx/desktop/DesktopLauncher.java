@@ -13,16 +13,13 @@ public class DesktopLauncher {
 		config.foregroundFPS = 60;
 		config.useGL30 = true;
 		config.samples = 8;
-		boolean server = true;
 		String serverIP = "";
 		for(String a : arg){
 		    System.out.println(arg);
 		    if(a.contains("--server-ip=")){
 			serverIP = a.substring("--server-ip=".length(), a.length());
-			server = false;
 		    }
 		}
-		System.out.println(server + " " + serverIP);
-		new LwjglApplication(new MyGame(server,serverIP), config);
+		new LwjglApplication(new MyGame(serverIP), config);
 	}
 }

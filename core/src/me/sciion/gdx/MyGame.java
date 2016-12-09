@@ -1,37 +1,37 @@
 package me.sciion.gdx;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
 
 import me.sciion.gdx.level.Level;
 import me.sciion.gdx.level.LevelLoader;
-import me.sciion.gdx.utils.KryoStasis;
+import me.sciion.gdx.netcode.ClientKryo;
+import me.sciion.gdx.netcode.ServerKryo;
 
 public class MyGame extends ApplicationAdapter {
 
     Level level;
     LevelLoader loader;
-    KryoStasis networking;
-    public boolean server;
+    ClientKryo client;
+    ServerKryo server;
+    
     private String serverIP;
-    public MyGame(boolean server, String serverIP){
-	this.server = server;
+    public MyGame(String serverIP){
 	this.serverIP = serverIP;
     }
     
     @Override
     public void create() {
-	networking = new KryoStasis();
-	if( server && networking.createServer()){
-	   System.out.println("Server");
-	}else if(!server){
-	    System.out.println("Client");
-	    networking.createClient(serverIP);
-	}
 	loader = new LevelLoader();
-	level = loader.load("maps/dummy_map.tmx",networking);
+	level = loader.load("maps/dummy_map.tmx");
 	level.setup();
-	
+	if(serverIP.isEmpty()) {
+	    server = new ServerKryo();
+	    server.setup(level);
+	} 
+	else {
+	    client = new ClientKryo();
+	    client.setup(serverIP,level);
+	}
 	
 
     }
@@ -40,9 +40,7 @@ public class MyGame extends ApplicationAdapter {
     @Override
     public void render() {
 	//System.out.println(Gdx.graphics.getFramesPerSecond());
-	networking.processInbound(level);
 	level.process();
-	networking.processOutbound();
     }
 
     @Override
