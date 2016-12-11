@@ -3,5 +3,5 @@ package me.sciion.gdx.utils.KryoMessage;
 public enum Input {
 
     
-    MOVE, INTERACT;
+    MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, ACTIVATE;
 }

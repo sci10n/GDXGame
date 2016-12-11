@@ -21,6 +21,10 @@ public class PhysicsSystem extends IteratingSystem{
     @Override
     protected void process(int e) {
 	Body b = cm.get(e).body;
+	if(b == null){
+	    System.err.println("Physics system works with no body! Entity " + e);
+	    return;
+	}
 	float x = b.getPosition().x;
 	float z = b.getPosition().y;
 	sm.get(e).position.set(x,0,z);

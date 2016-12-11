@@ -1,52 +1,73 @@
 package me.sciion.gdx;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
-import me.sciion.gdx.level.Level;
-import me.sciion.gdx.level.LevelLoader;
-import me.sciion.gdx.utils.KryoStasis;
+import me.sciion.gdx.level.ClientLevel;
+import me.sciion.gdx.level.ServerLevel;
+import me.sciion.gdx.netcode.ClientKryo;
+import me.sciion.gdx.netcode.ServerKryo;
 
 public class MyGame extends ApplicationAdapter {
 
-    Level level;
-    LevelLoader loader;
-    KryoStasis networking;
-    public boolean server;
+    ServerLevel serverLevel;
+    ClientLevel clientLevel;
+    ClientKryo client;
+    ServerKryo server;
+    
     private String serverIP;
-    public MyGame(boolean server, String serverIP){
-	this.server = server;
+    public MyGame(String serverIP){
 	this.serverIP = serverIP;
     }
     
     @Override
     public void create() {
-	networking = new KryoStasis();
-	if( server && networking.createServer()){
-	   System.out.println("Server");
-	}else if(!server){
-	    System.out.println("Client");
-	    networking.createClient(serverIP);
+	
+	TmxMapLoader loader  = new TmxMapLoader(new InternalFileHandleResolver());
+	TiledMap levelMap = loader.load("maps/dummy_map.tmx");
+	
+	if(serverIP.isEmpty()) {
+	    server = new ServerKryo();
+	    serverLevel = new ServerLevel();
+	    serverLevel.load(levelMap);
+	    serverLevel.setup(server);
+	    server.setup(serverLevel);
+	} 
+	else {
+	    client = new ClientKryo();
+	    clientLevel = new ClientLevel();
+	    clientLevel.load(levelMap);
+	    clientLevel.setup(client);
+	    client.setup(serverIP, clientLevel);
 	}
-	loader = new LevelLoader();
-	level = loader.load("maps/dummy_map.tmx",networking);
-	level.setup();
-	
-	
-
     }
-    
     
     @Override
     public void render() {
 	//System.out.println(Gdx.graphics.getFramesPerSecond());
-	networking.processInbound(level);
-	level.process();
-	networking.processOutbound();
+	if(server != null){
+	    server.processInbound();
+	}
+	if(client != null){
+	    client.processInbound();
+	}
+	if(serverLevel != null){
+	    serverLevel.process();
+	}
+	if(clientLevel != null){
+	    clientLevel.process();
+	}
+	if(server != null){
+	    server.processOutbound();
+	}
+	if(client != null){
+	    client.processOutbound();
+	}
     }
 
     @Override
     public void dispose() {
-	level.dispose();
     }	
 }

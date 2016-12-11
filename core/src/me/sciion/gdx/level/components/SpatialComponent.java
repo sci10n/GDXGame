@@ -19,5 +19,8 @@ public class SpatialComponent extends Component {
 	position = new Vector3(x, y, z);
 	dimension = new Vector3(w, h, d);
     }
-
+    public void create(Vector3 p, Vector3 d) {
+ 	position = p;
+ 	dimension = d;
+     }
 }

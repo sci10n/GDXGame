@@ -3,12 +3,13 @@ package me.sciion.gdx.utils.KryoMessage;
 public class NetworkMessage {
 
     
-    public int originator;
+    public int owner;
+    public boolean tcp = true;
     public NetworkMessage(){
-	originator = -1;
+	owner = -1;
     }
     
     public NetworkMessage(int id){
-	originator = id;
+	owner = id;
     }
 }
