@@ -160,7 +160,7 @@ public class ClientLevel extends Channels {
 		}
 	    }
 	    // ----------------
-	    message = (EntityMessage) dequeueOutbound();
+	    message = (EntityMessage) dequeueInbound();
 	}
     }
     

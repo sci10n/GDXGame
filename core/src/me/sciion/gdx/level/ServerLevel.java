@@ -157,7 +157,7 @@ public class ServerLevel extends Channels {
 		}
 	    }
 	    // ----------------
-	    message = (EntityMessage) dequeueOutbound();
+	    message = (EntityMessage) dequeueInbound();
 	}
     }
     
