@@ -13,44 +13,44 @@ import me.sciion.gdx.level.components.SpatialComponent;
 
 public class Archetypes {
 
-    public Archetype characterArchetype;
-    public Archetype playerArchetype;
-    public Archetype npcArchetype;
-    public Archetype structureArchetype;
-    public Archetype markerArchetype;
-    public Archetype floorArchetype;
-    public Archetype networkedEntity;
+    public Archetype character;
+    public Archetype player;
+    public Archetype npc;
+    public Archetype structure;
+    public Archetype marker;
+    public Archetype floor;
+    public Archetype networked;
     
     public Archetypes(World world){
-	characterArchetype = new ArchetypeBuilder()
+	character = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(ModelComponent.class)
 		.add(CollisionComponent.class)
 		.build(world);
-	playerArchetype = new ArchetypeBuilder(characterArchetype)
+	player = new ArchetypeBuilder(character)
 		.add(PlayerInputComponent.class).build(world);
-	structureArchetype = new ArchetypeBuilder()
+	structure = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(CollisionComponent.class)
 		.add(ModelComponent.class).build(world);
-	floorArchetype = new ArchetypeBuilder()
+	floor = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(ModelComponent.class)
 		.build(world);
-	markerArchetype = new ArchetypeBuilder()
+	marker = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.build(world);
-	npcArchetype= new ArchetypeBuilder()
+	npc= new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(ModelComponent.class)
 		.add(CollisionComponent.class)
 		.add(AutoInputComponent.class)
 		.build(world);
-	networkedEntity = new ArchetypeBuilder()
+	networked = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(ModelComponent.class)
-		.add(CollisionComponent.class)
 		.add(NetworkedInput.class)
 		.build(world);
+
     }
 }

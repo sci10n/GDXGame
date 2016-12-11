@@ -8,12 +8,14 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
-import me.sciion.gdx.level.Level;
 import me.sciion.gdx.level.components.CollisionComponent;
 import me.sciion.gdx.level.components.PlayerInputComponent;
 import me.sciion.gdx.level.components.SpatialComponent;
+import me.sciion.gdx.netcode.Channels;
+import me.sciion.gdx.utils.EntityType;
+import me.sciion.gdx.utils.InputUtils;
+import me.sciion.gdx.utils.KryoMessage.EntityCreated;
 import me.sciion.gdx.utils.KryoMessage.EntityInput;
-import me.sciion.gdx.utils.KryoMessage.Input;
 
 public class PlayerInputSystem extends IteratingSystem {
 
@@ -21,11 +23,11 @@ public class PlayerInputSystem extends IteratingSystem {
     private ComponentMapper<SpatialComponent> sm;
     private ComponentMapper<CollisionComponent> cm;
 
-    private Level level;
+    private Channels channels;
 
-    public PlayerInputSystem(Level level) {
+    public PlayerInputSystem(Channels channels) {
 	super(Aspect.all(PlayerInputComponent.class, SpatialComponent.class, CollisionComponent.class));
-	this.level = level;
+	this.channels = channels;
     }
 
     @Override
@@ -52,15 +54,28 @@ public class PlayerInputSystem extends IteratingSystem {
 	}
 	if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
 	    System.out.println("interact!");
+	    Vector3 v = InputUtils.playerMouse();
+	    v.sub(body.getPosition().x,0, body.getPosition().y);
+	    EntityCreated message = new EntityCreated();
+	    message.type = EntityType.NPC;
+	    message.poistion = v.scl(2);
+	    message.id = -1;
+	    message.owner = -1;
+	    
+	    channels.enqueInbound(message);
+	}
+	
+	if (Gdx.input.isKeyJustPressed(Keys.N)) {
+	    System.out.println("Create new entity!");
 	}
 
 	if (dirty) {
-	    Vector3 velocity = new Vector3(body.getLinearVelocity().x, 0, body.getLinearVelocity().y);
 	    EntityInput message = new EntityInput();
 	    message.id = eid;
-	    message.type = Input.MOVE;
-	    message.velocity = velocity;
-	    level.enqueOutbound(message);
+	    message.position = new Vector3(body.getPosition().x,0,body.getPosition().y);
+	    message.tcp = false;
+	    message.time = System.nanoTime() / 100000;
+	    channels.enqueOutbound(message);
 	}
     }
 

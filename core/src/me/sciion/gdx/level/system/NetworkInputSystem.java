@@ -6,6 +6,7 @@ import com.artemis.systems.IteratingSystem;
 
 import me.sciion.gdx.level.components.CollisionComponent;
 import me.sciion.gdx.level.components.NetworkedInput;
+import me.sciion.gdx.level.components.SpatialComponent;
 import me.sciion.gdx.utils.KryoMessage.EntityInput;
 import me.sciion.gdx.utils.KryoMessage.EntityMessage;
 import me.sciion.gdx.utils.KryoMessage.EntitySync;
@@ -14,29 +15,27 @@ import me.sciion.gdx.utils.KryoMessage.Input;
 public class NetworkInputSystem extends IteratingSystem {
 
     private ComponentMapper<NetworkedInput> nm;
-    private ComponentMapper<CollisionComponent> cm;
+    private ComponentMapper<SpatialComponent> sm;
 
     public NetworkInputSystem() {
-	super(Aspect.all(NetworkedInput.class, CollisionComponent.class));
+	super(Aspect.all(NetworkedInput.class, SpatialComponent.class));
     }
 
     @Override
     protected void process(int e) {
 	NetworkedInput in = nm.get(e);
-	CollisionComponent cc = cm.get(e);
-	cc.body.setLinearVelocity(cc.body.getLinearVelocity().cpy().scl(0.7f));
+	SpatialComponent sc = sm.get(e);
 	if(in.inbound.size != 0){
 		EntityMessage message = in.inbound.removeFirst();
 		if(message instanceof EntityInput){
 		    EntityInput input = (EntityInput) message;
-		    if(input.type == Input.INTERACT){
-			
-		    }else if(input.type == Input.MOVE){
-			cc.body.setLinearVelocity(input.velocity.x, input.velocity.z);
+		    if(input.type == Input.ACTIVATE){
+		    }else if(input.type == Input.MOVE_DOWN){
+		    }else if(input.type == Input.MOVE_LEFT){
+		    }else if(input.type == Input.MOVE_UP){
+		    }else if(input.type == Input.MOVE_RIGHT){
 		    }
-		} else if( message instanceof EntitySync){
-		    EntitySync syn = (EntitySync) message;
-		    cc.body.setTransform(syn.position.x, syn.position.y, 0);
+		    sc.position.set(input.position);
 		}
 	}
     }

@@ -1,16 +1,19 @@
 package me.sciion.gdx;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
-import me.sciion.gdx.level.Level;
-import me.sciion.gdx.level.LevelLoader;
+import me.sciion.gdx.level.ClientLevel;
+import me.sciion.gdx.level.ServerLevel;
 import me.sciion.gdx.netcode.ClientKryo;
 import me.sciion.gdx.netcode.ServerKryo;
 
 public class MyGame extends ApplicationAdapter {
 
-    Level level;
-    LevelLoader loader;
+    ServerLevel serverLevel;
+    ClientLevel clientLevel;
     ClientKryo client;
     ServerKryo server;
     
@@ -21,30 +24,50 @@ public class MyGame extends ApplicationAdapter {
     
     @Override
     public void create() {
-	loader = new LevelLoader();
-	level = loader.load("maps/dummy_map.tmx");
-	level.setup();
+	
+	TmxMapLoader loader  = new TmxMapLoader(new InternalFileHandleResolver());
+	TiledMap levelMap = loader.load("maps/dummy_map.tmx");
+	
 	if(serverIP.isEmpty()) {
 	    server = new ServerKryo();
-	    server.setup(level);
+	    serverLevel = new ServerLevel();
+	    serverLevel.load(levelMap);
+	    serverLevel.setup(server);
+	    server.setup(serverLevel);
 	} 
 	else {
 	    client = new ClientKryo();
-	    client.setup(serverIP,level);
+	    clientLevel = new ClientLevel();
+	    clientLevel.load(levelMap);
+	    clientLevel.setup(client);
+	    client.setup(serverIP, clientLevel);
 	}
-	
-
     }
-    
     
     @Override
     public void render() {
 	//System.out.println(Gdx.graphics.getFramesPerSecond());
-	level.process();
+	if(server != null){
+	    server.processInbound();
+	}
+	if(client != null){
+	    client.processInbound();
+	}
+	if(serverLevel != null){
+	    serverLevel.process();
+	}
+	if(clientLevel != null){
+	    clientLevel.process();
+	}
+	if(server != null){
+	    server.processOutbound();
+	}
+	if(client != null){
+	    client.processOutbound();
+	}
     }
 
     @Override
     public void dispose() {
-	level.dispose();
     }	
 }

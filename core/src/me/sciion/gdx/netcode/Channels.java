@@ -6,21 +6,24 @@ import com.badlogic.gdx.utils.Queue;
 
 import me.sciion.gdx.utils.KryoMessage.NetworkMessage;
 
-public class KryoChannels {
+public abstract class Channels {
 
-    private Queue<NetworkMessage> outbound;
-    private Queue<NetworkMessage> inbound;
+    protected Queue<NetworkMessage> outbound;
+    protected Queue<NetworkMessage> inbound;
 
-    private ReentrantLock inboundLock;
-    private ReentrantLock outboundLock;
+    protected ReentrantLock inboundLock;
+    protected ReentrantLock outboundLock;
 
-    private int originator;
 
-    public KryoChannels(int originator) {
-	this.originator = originator;
+    public Channels() {
 	outbound = new Queue<NetworkMessage>();
 	inbound = new Queue<NetworkMessage>();
+	outboundLock = new ReentrantLock();
+	inboundLock = new ReentrantLock();
     }
+
+    public abstract void processOutbound();
+    public abstract void processInbound();
 
     public void enqueInbound(NetworkMessage message) {
 	inboundLock.lock();
@@ -32,7 +35,6 @@ public class KryoChannels {
     }
 
     public void enqueOutbound(NetworkMessage message) {
-	message.originator = originator;
 	outboundLock.lock();
 	try {
 	    outbound.addLast(message);
