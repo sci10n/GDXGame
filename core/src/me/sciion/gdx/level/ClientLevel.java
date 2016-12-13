@@ -3,6 +3,7 @@ package me.sciion.gdx.level;
 import java.util.Hashtable;
 
 import com.artemis.Component;
+import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
@@ -19,11 +20,15 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import me.sciion.gdx.level.components.CollisionComponent;
 import me.sciion.gdx.level.components.ModelComponent;
 import me.sciion.gdx.level.components.NetworkedInput;
+import me.sciion.gdx.level.components.PlayerInputComponent;
 import me.sciion.gdx.level.components.SpatialComponent;
 import me.sciion.gdx.level.system.AutoInputSystem;
+import me.sciion.gdx.level.system.CollisionResolvingSystem;
+import me.sciion.gdx.level.system.HealthSystem;
 import me.sciion.gdx.level.system.NetworkInputSystem;
 import me.sciion.gdx.level.system.PhysicsSystem;
 import me.sciion.gdx.level.system.PlayerInputSystem;
+import me.sciion.gdx.level.system.ProjectileSystem;
 import me.sciion.gdx.level.system.RenderSystem;
 import me.sciion.gdx.netcode.Channels;
 import me.sciion.gdx.netcode.ClientKryo;
@@ -39,8 +44,14 @@ import me.sciion.gdx.utils.KryoMessage.EntityMessage;
 
 public class ClientLevel extends Channels {
 
+    private PlayerInputSystem pis;
+    private RenderSystem rs;
+    private PhysicsSystem ps;
+    private CollisionResolvingSystem crs;
+    private AutoInputSystem ais;
+    private NetworkInputSystem nis;
+    
     private World world;
-    private com.badlogic.gdx.physics.box2d.World physics_world;
     private ClientKryo client;
     private Archetypes archetypes;
     
@@ -48,8 +59,15 @@ public class ClientLevel extends Channels {
     
     private Hashtable<String,Integer> markers;
     
+    private int entityFocus = -1;
+    
     public <T extends Component> T getComponent(Class<T> clazz, int internalID) {
 	T t = world.getMapper(clazz).getSafe(internalID);
+	return t;
+    }
+    
+    public <T extends Component> T addComponent(Class<T> clazz, int internal){
+	T t = world.getMapper(clazz).create(internal);
 	return t;
     }
     
@@ -62,12 +80,19 @@ public class ClientLevel extends Channels {
     }
     
     public ClientLevel() {
+
+	pis = new PlayerInputSystem(this);
+	rs = new RenderSystem();
+	ps = new PhysicsSystem();
+	crs = new CollisionResolvingSystem();
+	ais = new AutoInputSystem(this);
+	nis = new NetworkInputSystem(this);
+	
 	markers = new Hashtable<String,Integer>();
-	WorldConfiguration world_config = new WorldConfigurationBuilder().with(new PlayerInputSystem(this),new RenderSystem(), new PhysicsSystem(), new AutoInputSystem(this), new NetworkInputSystem()).build();
+	WorldConfiguration world_config = new WorldConfigurationBuilder().with(pis, rs, ps, crs, ais, nis, new HealthSystem(this), new ProjectileSystem(this)).build();
 	world = new World(world_config);
 	
 	archetypes = new Archetypes(world);
-	physics_world = new com.badlogic.gdx.physics.box2d.World(Vector2.Zero, true);
 	
     }
     
@@ -77,9 +102,8 @@ public class ClientLevel extends Channels {
     
     public void process(){
 	processInbound();
-	physics_world.step(Gdx.graphics.getDeltaTime(), 6, 2);
-	world.setDelta(Gdx.graphics.getDeltaTime());
 	world.process();
+	world.setDelta(Gdx.graphics.getDeltaTime());
 	processOutbound();
     }
     
@@ -88,10 +112,13 @@ public class ClientLevel extends Channels {
     public void processOutbound() {
 	EntityMessage message = (EntityMessage) dequeueOutbound();
 	while(message != null){
+	    if( client.getExternal(message.id) != -1){
 	    message.id = client.getExternal(message.id);
 	    client.enqueOutbound(message);
-	    message = (EntityMessage) dequeueOutbound();
 	}
+	    message = (EntityMessage) dequeueOutbound();
+
+	    }
     }
 
     @Override
@@ -116,9 +143,12 @@ public class ClientLevel extends Channels {
                 		case NETWORKED:
                 		{
                 		    Vector3 spawnPosition = ((EntityCreated) message).poistion; //getComponent(SpatialComponent.class, markers.get("player_spawn")).position;
-                		    Vector3 dimensions = new Vector3(0.8f,1.0f,0.8f);
+                		    Vector3 dimensions = ((EntityCreated) message).dimensions;
+                		    System.out.println(dimensions);
                 		    int internal = world.create(archetypes.networked);
                 		    getComponent(SpatialComponent.class, internal).create(spawnPosition.cpy(), dimensions.cpy());
+                		    //addComponent(CollisionComponent.class, internal).create(PhysicsUtils.createBody(ps.getPhysicsWorld(),spawnPosition.x, spawnPosition.z, dimensions.x, dimensions.z, BodyType.DynamicBody, true));
+
                 		    client.registerEntity(internal, message.id);
                 		    RandomXS128 r = new RandomXS128(message.id);
                 		    getComponent(ModelComponent.class,internal).instance = ModelConstructer.create(dimensions.x,dimensions.y,dimensions.z, new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1.0f));
@@ -130,10 +160,13 @@ public class ClientLevel extends Channels {
                 		    Vector3 dimensions = new Vector3(0.8f,1.0f,0.8f);
                 		    int internal = world.create(archetypes.player);
                 		    getComponent(SpatialComponent.class, internal).create(spawnPosition.cpy(), dimensions.cpy());
-                		    getComponent(CollisionComponent.class, internal).create(PhysicsUtils.createBody(physics_world,spawnPosition.x, spawnPosition.z, dimensions.x, dimensions.z, BodyType.DynamicBody));
+                		    addComponent(CollisionComponent.class, internal).create(PhysicsUtils.createBody(ps.getPhysicsWorld(),spawnPosition.x, spawnPosition.z, dimensions.x, dimensions.z, BodyType.DynamicBody, false));
                 		    client.registerEntity(internal, message.id);
                 		    RandomXS128 r = new RandomXS128(message.id);
-                		    getComponent(ModelComponent.class,internal).instance = ModelConstructer.create(dimensions.x,dimensions.y,dimensions.z, new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1.0f));
+                		    getComponent(ModelComponent.class, internal).instance = ModelConstructer.create(dimensions.x,dimensions.y,dimensions.z, new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1.0f));
+                		    if(entityFocus == -1){
+                			entityFocus = internal;
+                		    }
                 		}
                 		break;
                 		case STATIC:
@@ -190,7 +223,7 @@ public class ClientLevel extends Channels {
  	    float h = 1.0f;
  	   getComponent(SpatialComponent.class, s).create(x, 0, z, w, h, d);
  	   getComponent(ModelComponent.class, s).instance = ModelConstructer.create(w, h, d, Color.DARK_GRAY);
- 	   getComponent(CollisionComponent.class, s).create(PhysicsUtils.createBody(physics_world,x, z, w, d, BodyType.StaticBody));
+ 	   getComponent(CollisionComponent.class, s).create(PhysicsUtils.createBody(ps.getPhysicsWorld(),x, z, w, d, BodyType.StaticBody, false));
  	}
 
  	System.out.println("--===|Markers|===--");
@@ -221,7 +254,7 @@ public class ClientLevel extends Channels {
  		int s = world.create(archetypes.npc);
  		getComponent(SpatialComponent.class, s).create(x, 0, z, 0.8f, 1, 0.8f);
  		getComponent(ModelComponent.class, s).instance = ModelConstructer.create(0.8f, 1, 0.8f, Color.NAVY);
- 		getComponent(CollisionComponent.class, s).create(PhysicsUtils.createBody(physics_world, x, z, 0.8f, 0.8f, BodyType.DynamicBody));
+ 		getComponent(CollisionComponent.class, s).create(PhysicsUtils.createBody(ps.getPhysicsWorld(), x, z, 0.8f, 0.8f, BodyType.DynamicBody, false));
  	    }
  	};
 

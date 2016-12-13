@@ -25,10 +25,11 @@ public class Archetypes {
 	character = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(ModelComponent.class)
-		.add(CollisionComponent.class)
 		.build(world);
 	player = new ArchetypeBuilder(character)
-		.add(PlayerInputComponent.class).build(world);
+		.add(PlayerInputComponent.class)
+		.add(NetworkedInput.class)
+		.build(world);
 	structure = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.add(CollisionComponent.class)
@@ -40,15 +41,10 @@ public class Archetypes {
 	marker = new ArchetypeBuilder()
 		.add(SpatialComponent.class)
 		.build(world);
-	npc= new ArchetypeBuilder()
-		.add(SpatialComponent.class)
-		.add(ModelComponent.class)
-		.add(CollisionComponent.class)
+	npc= new ArchetypeBuilder(character)
 		.add(AutoInputComponent.class)
 		.build(world);
-	networked = new ArchetypeBuilder()
-		.add(SpatialComponent.class)
-		.add(ModelComponent.class)
+	networked = new ArchetypeBuilder(character)
 		.add(NetworkedInput.class)
 		.build(world);
 

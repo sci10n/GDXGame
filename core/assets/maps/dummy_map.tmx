@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="21" height="21" tilewidth="1" tileheight="1" nextobjectid="503">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="21" height="21" tilewidth="1" tileheight="1" nextobjectid="520">
  <tileset firstgid="1" name="tiled2" tilewidth="1" tileheight="1" tilecount="256" columns="16">
   <image source="../tiled2.png" width="16" height="16"/>
  </tileset>
  <objectgroup name="structures">
   <object id="470" x="14" y="6" width="1" height="1"/>
-  <object id="471" x="15" y="7" width="1" height="1"/>
-  <object id="472" x="16" y="8" width="1" height="1"/>
-  <object id="473" x="17" y="9" width="1" height="1"/>
+  <object id="471" x="15" y="6" width="1" height="1"/>
+  <object id="472" x="16" y="6" width="1" height="1"/>
+  <object id="473" x="17" y="6" width="1" height="1"/>
   <object id="491" x="0" y="0" width="21" height="1"/>
   <object id="492" x="0" y="1" width="1" height="20"/>
   <object id="493" x="1" y="20" width="20" height="1"/>
@@ -16,11 +16,27 @@
   <object id="497" x="5" y="3" width="3" height="1"/>
   <object id="498" x="7" y="4" width="1" height="3"/>
   <object id="499" x="5" y="6" width="2" height="1"/>
-  <object id="500" x="3" y="12" width="1" height="4"/>
-  <object id="501" x="3" y="16" width="4" height="1"/>
+  <object id="500" x="4" y="7" width="1" height="4"/>
+  <object id="501" x="4" y="15" width="4" height="1"/>
   <object id="502" x="11" y="10" width="1" height="5"/>
+  <object id="503" x="17" y="7" width="1" height="1"/>
+  <object id="504" x="17" y="8" width="1" height="1"/>
+  <object id="505" x="17" y="9" width="1" height="1"/>
+  <object id="506" x="17" y="10" width="1" height="1"/>
+  <object id="507" x="17" y="11" width="1" height="1"/>
+  <object id="508" x="17" y="13" width="1" height="1"/>
+  <object id="509" x="17" y="12" width="1" height="1"/>
+  <object id="510" x="17" y="14" width="1" height="1"/>
+  <object id="511" x="17" y="15" width="1" height="1"/>
+  <object id="512" x="16" y="15" width="1" height="1"/>
+  <object id="513" x="15" y="15" width="1" height="1"/>
+  <object id="514" x="14" y="15" width="1" height="1"/>
+  <object id="515" x="13" y="15" width="1" height="1"/>
+  <object id="516" x="12" y="15" width="1" height="1"/>
+  <object id="517" x="11" y="15" width="1" height="1"/>
  </objectgroup>
  <objectgroup name="markers">
   <object id="289" name="player_spawn" x="7" y="12" width="1" height="1"/>
+  <object id="519" name="dummy_marker" x="14" y="9" width="1" height="1"/>
  </objectgroup>
 </map>

@@ -3,7 +3,7 @@ package me.sciion.gdx.level.components;
 import com.artemis.Component;
 import com.badlogic.gdx.math.MathUtils;
 
-public class AutoInputComponent extends Component{
+public class AutoInput extends Component{
 
     // If -1, wander
     public int targetEntity;
@@ -16,7 +16,7 @@ public class AutoInputComponent extends Component{
     public float targetTime;
     public float idleTime;
     public boolean idling = true;
-    public AutoInputComponent(){
+    public AutoInput(){
 	targetEntity = -1;
 	currentTime = 0;
 	targetTime = MathUtils.random(1, 2f);

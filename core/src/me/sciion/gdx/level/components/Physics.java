@@ -3,12 +3,12 @@ package me.sciion.gdx.level.components;
 import com.artemis.Component;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public class CollisionComponent extends Component {
+public class Physics extends Component {
 
     
     public Body body;
     
-    public CollisionComponent() {
+    public Physics() {
 	
     }
     

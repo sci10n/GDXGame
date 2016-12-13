@@ -10,7 +10,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class PhysicsUtils {
 
-    public static Body createBody(World world, float x, float z, float w, float d, BodyType type) {
+    public static Body createBody(World world, float x, float z, float w, float d, BodyType type, boolean sensor) {
 	BodyDef def = new BodyDef();
 	def.type = type;
 	def.position.set(x, z);
@@ -20,10 +20,12 @@ public class PhysicsUtils {
 	FixtureDef fixDef = new FixtureDef();
 	fixDef.shape = shape;
 	fixDef.density = 1f;
+	fixDef.isSensor = sensor;
 	// fixDef.friction = 20.0f;
 	Fixture f = body.createFixture(fixDef);
 	shape.dispose();
 	body.setFixedRotation(true);
+	System.out.println(body);
 	return body;
     }
 }

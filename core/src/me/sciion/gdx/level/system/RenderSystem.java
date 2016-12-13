@@ -20,17 +20,15 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 
-import me.sciion.gdx.level.components.ModelComponent;
-import me.sciion.gdx.level.components.PlayerInputComponent;
-import me.sciion.gdx.level.components.SpatialComponent;
+import me.sciion.gdx.level.components.Model;
+import me.sciion.gdx.level.components.Spatial;
 import me.sciion.gdx.utils.InputUtils;
 import me.sciion.gdx.utils.ModelConstructer;
 
 public class RenderSystem extends EntitySystem {
 
-    ComponentMapper<SpatialComponent> sm;
-    ComponentMapper<ModelComponent> mm;
-    ComponentMapper<PlayerInputComponent> pm;
+    ComponentMapper<Spatial> sm;
+    ComponentMapper<Model> mm;
 
     public static boolean followPlayer = true;
     private PerspectiveCamera camera;
@@ -45,7 +43,7 @@ public class RenderSystem extends EntitySystem {
     private ModelInstance dummyModel;
 
     public RenderSystem() {
-	super(Aspect.all(ModelComponent.class, SpatialComponent.class));
+	super(Aspect.all(Model.class, Spatial.class));
 	camera = new PerspectiveCamera(65, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	camera.position.set(0, 8.0f, 0);
 	camera.lookAt(0, 0, 0.5f);
@@ -92,9 +90,6 @@ public class RenderSystem extends EntitySystem {
 
 	batch.begin(camera);
 	for (Entity e : getEntities()) {
-	    if (pm.getSafe(e.getId()) != null) {
-		setFocus(e.getId());
-	    }
 	    if (mm.get(e).decal != null) {
 		Decal decal = mm.get(e).decal;
 		decal.setPosition(sm.get(e).position.cpy().add(0, 0.1f, 0));
@@ -103,8 +98,8 @@ public class RenderSystem extends EntitySystem {
 		decal_batch.add(mm.get(e).decal);
 	    }
 	    if (mm.get(e).instance != null) {
-		SpatialComponent s = sm.get(e);
-		ModelComponent m = mm.get(e);
+		Spatial s = sm.get(e);
+		Model m = mm.get(e);
 		m.instance.transform.setToTranslation(s.position);
 		batch.render(m.instance, environemnt);
 	    }

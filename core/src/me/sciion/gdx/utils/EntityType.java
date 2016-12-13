@@ -3,5 +3,5 @@ package me.sciion.gdx.utils;
 public enum EntityType {
 
     
-    PLAYER, STATIC, NPC, NETWORKED;
+    PLAYER, STATIC, NPC, NETWORKED, PROJECTILE;
 }

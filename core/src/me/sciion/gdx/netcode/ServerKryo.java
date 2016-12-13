@@ -47,7 +47,10 @@ public class ServerKryo extends Listener {
     }
     
     public int getExternal(int internal){
-	return internalExternal.get(internal);
+	if(internalExternal.containsKey(internal)){
+	    return internalExternal.get(internal); 
+	}
+	return -1;
     }
     
     public boolean isRegistered(int external){
@@ -69,11 +72,11 @@ public class ServerKryo extends Listener {
 	    
 	    @Override
 	    public void processOutbound() {
-		System.out.println("Outbound size: " + outbound.size);
+		//System.out.println("Outbound size: " + outbound.size);
 
 		NetworkMessage message = dequeueOutbound();
 		while (message != null) {
-		    System.out.println("Sending message with owner: "+ message.owner + " from server");
+		    //System.out.println("Sending message with owner: "+ message.owner + " from server");
 		    if(message.tcp)
 			server.sendToAllTCP(message);
 		    else
@@ -84,7 +87,7 @@ public class ServerKryo extends Listener {
 	    
 	    @Override
 	    public void processInbound() {
-		System.out.println("Inbound size: " + inbound.size);
+		//System.out.println("Inbound size: " + inbound.size);
 
 		NetworkMessage message = dequeueInbound();
 		while (message != null) {
@@ -98,6 +101,8 @@ public class ServerKryo extends Listener {
 			    m.id = i;
 			    m.owner = registeredEntities.get(i);
 			    m.poistion = level.getComponent(SpatialComponent.class, externalIneternal.get(i)).position;
+			    m.dimensions = new Vector3(0.8f, 1.0f, 0.8f);
+
 			    m.type = EntityType.NETWORKED;
 			    enqueOutbound(m);
 			}
@@ -120,6 +125,7 @@ public class ServerKryo extends Listener {
 	EntityCreated message = new EntityCreated();
 	message.id = -1;
 	message.poistion = level.getComponent(SpatialComponent.class, level.getMarker("player_spawn")).position;
+	message.dimensions = new Vector3(0.8f, 1.0f, 0.8f);
 	message.owner = connectionID;
 	message.type = EntityType.PLAYER;
 	level.enqueInbound(message);
@@ -133,6 +139,7 @@ public class ServerKryo extends Listener {
 	EntityCreated message = new EntityCreated();
 	message.owner = connection.getID();
 	message.poistion = level.getComponent(SpatialComponent.class, level.getMarker("player_spawn")).position;
+	message.dimensions = new Vector3(0.8f, 1.0f, 0.8f);
 	message.type = EntityType.NETWORKED;
 	level.enqueInbound(message);
 	// Create client player entity ´
@@ -175,6 +182,8 @@ public class ServerKryo extends Listener {
 	message.owner = owner;
 	message.id = external;
 	message.poistion = position;
+	message.dimensions = new Vector3(0.8f, 1.0f, 0.8f);
+
 	message.type = EntityType.NETWORKED;
 	enqueOutbound(message);
 	return external;

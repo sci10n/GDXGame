@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.Kryo;
 import me.sciion.gdx.utils.EntityType;
 import me.sciion.gdx.utils.KryoMessage.ClientRequests;
 import me.sciion.gdx.utils.KryoMessage.EntityCreated;
+import me.sciion.gdx.utils.KryoMessage.EntityDead;
 import me.sciion.gdx.utils.KryoMessage.EntityDelete;
 import me.sciion.gdx.utils.KryoMessage.EntityInput;
 import me.sciion.gdx.utils.KryoMessage.EntityMessage;
@@ -30,6 +31,7 @@ public class KryoUtils {
 	kryo.register(EntityDelete.class);
 	kryo.register(EntitySync.class);
 	kryo.register(EntityType.class);
+	kryo.register(EntityDead.class);
 
     }
 

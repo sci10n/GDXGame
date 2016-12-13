@@ -31,7 +31,10 @@ public class ClientKryo extends Listener{
     }
     
     public int getExternal(int internal){
-	return internalExternal.get(internal);
+	if(internalExternal.containsKey(internal)){
+	    return internalExternal.get(internal); 
+	}
+	return -1;
     }
     
     public boolean isRegistered(int external){

@@ -8,7 +8,8 @@ public class EntityCreated extends EntityMessage{
 
     public Vector3 poistion;
     public EntityType type;
-    
+    public Vector3 dimensions;
+
     @Override
     public String toString() {
         return id + "\t" + poistion + "\t" + type;

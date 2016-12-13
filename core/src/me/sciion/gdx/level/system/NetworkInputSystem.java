@@ -3,28 +3,32 @@ package me.sciion.gdx.level.system;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 
-import me.sciion.gdx.level.components.CollisionComponent;
-import me.sciion.gdx.level.components.NetworkedInput;
-import me.sciion.gdx.level.components.SpatialComponent;
+import me.sciion.gdx.level.components.Network;
+import me.sciion.gdx.level.components.Physics;
+import me.sciion.gdx.level.components.Spatial;
+import me.sciion.gdx.netcode.Channels;
 import me.sciion.gdx.utils.KryoMessage.EntityInput;
 import me.sciion.gdx.utils.KryoMessage.EntityMessage;
-import me.sciion.gdx.utils.KryoMessage.EntitySync;
 import me.sciion.gdx.utils.KryoMessage.Input;
 
 public class NetworkInputSystem extends IteratingSystem {
 
-    private ComponentMapper<NetworkedInput> nm;
-    private ComponentMapper<SpatialComponent> sm;
-
-    public NetworkInputSystem() {
-	super(Aspect.all(NetworkedInput.class, SpatialComponent.class));
+    private ComponentMapper<Network> nm;
+    private ComponentMapper<Spatial> sm;
+    private ComponentMapper<Physics> cm;
+    private Channels channels;
+    public NetworkInputSystem(Channels channels) {
+	super(Aspect.all(Network.class, Spatial.class));
+	this.channels = channels;
     }
 
     @Override
     protected void process(int e) {
-	NetworkedInput in = nm.get(e);
-	SpatialComponent sc = sm.get(e);
+	Network in = nm.get(e);
+	Spatial sc = sm.get(e);
+	Physics cc = cm.getSafe(e);
 	if(in.inbound.size != 0){
 		EntityMessage message = in.inbound.removeFirst();
 		if(message instanceof EntityInput){
@@ -35,7 +39,14 @@ public class NetworkInputSystem extends IteratingSystem {
 		    }else if(input.type == Input.MOVE_UP){
 		    }else if(input.type == Input.MOVE_RIGHT){
 		    }
-		    sc.position.set(input.position);
+		    if(cc != null){
+			cc.body.setLinearVelocity(input.velocity.x, input.velocity.z);
+		    }
+		    else{
+			sc.position.set(input.position.add(input.velocity.scl(Gdx.graphics.getDeltaTime())));
+
+		    }
+
 		}
 	}
     }
