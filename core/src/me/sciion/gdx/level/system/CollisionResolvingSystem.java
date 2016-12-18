@@ -1,48 +1,58 @@
 package me.sciion.gdx.level.system;
 
 import com.artemis.Aspect;
+import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
-import com.artemis.systems.IteratingSystem;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 
-import me.sciion.gdx.level.components.Damage;
-import me.sciion.gdx.level.components.Health;
-import me.sciion.gdx.level.components.Physics;
+import me.sciion.gdx.level.components.Collision;
 
-public class CollisionResolvingSystem extends IteratingSystem {
+public class CollisionResolvingSystem extends BaseEntitySystem implements ContactListener {
 
     PhysicsSystem ps;
-    ComponentMapper<Physics> cm;
-    ComponentMapper<Health> hm;
-    ComponentMapper<Damage> dm;
-
-    @SuppressWarnings("unchecked")
+    ComponentMapper<Collision> cm;
+    
     public CollisionResolvingSystem() {
-	super(Aspect.all(Physics.class).one(Health.class, Damage.class));
+	super(Aspect.all(Collision.class));
+    }
+    
+    @Override
+    public void beginContact(Contact contact) {
+	Integer ida = (Integer) contact.getFixtureA().getBody().getUserData();
+	Integer idb = (Integer) contact.getFixtureB().getBody().getUserData();
+	if (ida != null && idb != null) {
+	    cm.get(ida).currentCollisions.add(idb);
+	    cm.get(idb).currentCollisions.add(ida);
+	}
 
     }
 
     @Override
-    protected void process(int id) {
-	if (ps.getCollisions().containsKey(id)) {
-	    int target = ps.getCollisions().get(id);
-	    Damage dc1 = dm.getSafe(id);
-	    Damage dc2 = dm.getSafe(target);
-	    Health hc1 = hm.getSafe(id);
-	    Health hc2 = hm.getSafe(target);
-	    
-	    if(dc1 != null && hc2 != null){
-		hc2.remove(dc1.damage);
-		System.out.println(target + " damaged for " + dc1.damage);
-	    }else if(dc2 != null && hc1 != null){
-		hc1.remove(dc2.damage);
-		System.out.println(id + " damaged for " + dc2.damage);
-
-	    }
-	    
-	    //if (hc != null){
-	//	hc.remove(dc.damage);
-//	    }
+    public void endContact(Contact contact) {
+	Integer ida = (Integer) contact.getFixtureA().getBody().getUserData();
+	Integer idb = (Integer) contact.getFixtureB().getBody().getUserData();
+	if (ida != null && idb != null) {
+	    cm.get(ida).currentCollisions.removeValue(idb,false);
+	    cm.get(idb).currentCollisions.removeValue(ida,false);
 	}
     }
-    
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+	
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+	
+    }
+
+    @Override
+    protected void processSystem() {
+	ps.getPhysicsWorld().setContactListener(this);
+    }
+
 }

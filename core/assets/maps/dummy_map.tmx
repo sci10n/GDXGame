@@ -1,42 +1,215 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="21" height="21" tilewidth="1" tileheight="1" nextobjectid="520">
- <tileset firstgid="1" name="tiled2" tilewidth="1" tileheight="1" tilecount="256" columns="16">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="21" tilewidth="1" tileheight="1" nextobjectid="762">
+ <tileset firstgid="1" name="tiled2" tilewidth="1" tileheight="1" tilecount="0" columns="16">
   <image source="../tiled2.png" width="16" height="16"/>
  </tileset>
  <objectgroup name="structures">
-  <object id="470" x="14" y="6" width="1" height="1"/>
-  <object id="471" x="15" y="6" width="1" height="1"/>
-  <object id="472" x="16" y="6" width="1" height="1"/>
-  <object id="473" x="17" y="6" width="1" height="1"/>
-  <object id="491" x="0" y="0" width="21" height="1"/>
-  <object id="492" x="0" y="1" width="1" height="20"/>
-  <object id="493" x="1" y="20" width="20" height="1"/>
-  <object id="495" x="20" y="1" width="1" height="19"/>
-  <object id="496" x="4" y="3" width="1" height="4"/>
-  <object id="497" x="5" y="3" width="3" height="1"/>
-  <object id="498" x="7" y="4" width="1" height="3"/>
-  <object id="499" x="5" y="6" width="2" height="1"/>
-  <object id="500" x="4" y="7" width="1" height="4"/>
-  <object id="501" x="4" y="15" width="4" height="1"/>
-  <object id="502" x="11" y="10" width="1" height="5"/>
-  <object id="503" x="17" y="7" width="1" height="1"/>
-  <object id="504" x="17" y="8" width="1" height="1"/>
-  <object id="505" x="17" y="9" width="1" height="1"/>
-  <object id="506" x="17" y="10" width="1" height="1"/>
-  <object id="507" x="17" y="11" width="1" height="1"/>
-  <object id="508" x="17" y="13" width="1" height="1"/>
-  <object id="509" x="17" y="12" width="1" height="1"/>
-  <object id="510" x="17" y="14" width="1" height="1"/>
-  <object id="511" x="17" y="15" width="1" height="1"/>
-  <object id="512" x="16" y="15" width="1" height="1"/>
-  <object id="513" x="15" y="15" width="1" height="1"/>
-  <object id="514" x="14" y="15" width="1" height="1"/>
-  <object id="515" x="13" y="15" width="1" height="1"/>
-  <object id="516" x="12" y="15" width="1" height="1"/>
-  <object id="517" x="11" y="15" width="1" height="1"/>
+  <object id="536" x="0" y="0" width="1" height="1"/>
+  <object id="537" x="1" y="0" width="1" height="1"/>
+  <object id="538" x="2" y="0" width="1" height="1"/>
+  <object id="539" x="3" y="0" width="1" height="1"/>
+  <object id="540" x="4" y="0" width="1" height="1"/>
+  <object id="541" x="5" y="0" width="1" height="1"/>
+  <object id="542" x="6" y="0" width="1" height="1"/>
+  <object id="543" x="7" y="0" width="1" height="1"/>
+  <object id="544" x="8" y="0" width="1" height="1"/>
+  <object id="545" x="9" y="0" width="1" height="1"/>
+  <object id="546" x="10" y="0" width="1" height="1"/>
+  <object id="547" x="11" y="0" width="1" height="1"/>
+  <object id="548" x="12" y="0" width="1" height="1"/>
+  <object id="549" x="13" y="0" width="1" height="1"/>
+  <object id="550" x="14" y="0" width="1" height="1"/>
+  <object id="551" x="15" y="0" width="1" height="1"/>
+  <object id="552" x="16" y="0" width="1" height="1"/>
+  <object id="553" x="17" y="0" width="1" height="1"/>
+  <object id="554" x="18" y="0" width="1" height="1"/>
+  <object id="555" x="19" y="0" width="1" height="1"/>
+  <object id="556" x="20" y="0" width="1" height="1"/>
+  <object id="557" x="1" y="20" width="1" height="1"/>
+  <object id="558" x="18" y="20" width="1" height="1"/>
+  <object id="559" x="16" y="20" width="1" height="1"/>
+  <object id="560" x="17" y="20" width="1" height="1"/>
+  <object id="561" x="4" y="20" width="1" height="1"/>
+  <object id="562" x="7" y="20" width="1" height="1"/>
+  <object id="563" x="0" y="20" width="1" height="1"/>
+  <object id="564" x="12" y="20" width="1" height="1"/>
+  <object id="565" x="14" y="20" width="1" height="1"/>
+  <object id="566" x="13" y="20" width="1" height="1"/>
+  <object id="567" x="6" y="20" width="1" height="1"/>
+  <object id="568" x="20" y="20" width="1" height="1"/>
+  <object id="569" x="9" y="20" width="1" height="1"/>
+  <object id="570" x="5" y="20" width="1" height="1"/>
+  <object id="571" x="15" y="20" width="1" height="1"/>
+  <object id="572" x="3" y="20" width="1" height="1"/>
+  <object id="573" x="10" y="20" width="1" height="1"/>
+  <object id="574" x="19" y="20" width="1" height="1"/>
+  <object id="575" x="2" y="20" width="1" height="1"/>
+  <object id="576" x="11" y="20" width="1" height="1"/>
+  <object id="577" x="8" y="20" width="1" height="1"/>
+  <object id="578" x="0" y="1" width="1" height="1"/>
+  <object id="584" x="0" y="2" width="1" height="1"/>
+  <object id="585" x="0" y="3" width="1" height="1"/>
+  <object id="596" x="0" y="4" width="1" height="1"/>
+  <object id="599" x="0" y="7" width="1" height="1"/>
+  <object id="600" x="0" y="8" width="1" height="1"/>
+  <object id="601" x="0" y="5" width="1" height="1"/>
+  <object id="602" x="0" y="6" width="1" height="1"/>
+  <object id="603" x="0" y="11" width="1" height="1"/>
+  <object id="604" x="0" y="12" width="1" height="1"/>
+  <object id="605" x="0" y="9" width="1" height="1"/>
+  <object id="606" x="0" y="10" width="1" height="1"/>
+  <object id="607" x="0" y="15" width="1" height="1"/>
+  <object id="608" x="0" y="16" width="1" height="1"/>
+  <object id="609" x="0" y="13" width="1" height="1"/>
+  <object id="610" x="0" y="14" width="1" height="1"/>
+  <object id="611" x="0" y="17" width="1" height="1"/>
+  <object id="612" x="0" y="18" width="1" height="1"/>
+  <object id="613" x="0" y="19" width="1" height="1"/>
+  <object id="614" x="20" y="4" width="1" height="1"/>
+  <object id="615" x="20" y="14" width="1" height="1"/>
+  <object id="616" x="20" y="5" width="1" height="1"/>
+  <object id="617" x="20" y="9" width="1" height="1"/>
+  <object id="618" x="20" y="12" width="1" height="1"/>
+  <object id="619" x="20" y="3" width="1" height="1"/>
+  <object id="620" x="20" y="16" width="1" height="1"/>
+  <object id="621" x="20" y="2" width="1" height="1"/>
+  <object id="622" x="20" y="15" width="1" height="1"/>
+  <object id="623" x="20" y="7" width="1" height="1"/>
+  <object id="625" x="20" y="8" width="1" height="1"/>
+  <object id="626" x="20" y="11" width="1" height="1"/>
+  <object id="627" x="20" y="6" width="1" height="1"/>
+  <object id="628" x="20" y="10" width="1" height="1"/>
+  <object id="630" x="20" y="1" width="1" height="1"/>
+  <object id="631" x="20" y="13" width="1" height="1"/>
+  <object id="632" x="20" y="19" width="1" height="1"/>
+  <object id="633" x="14" y="7" width="1" height="1"/>
+  <object id="634" x="13" y="7" width="1" height="1"/>
+  <object id="635" x="12" y="7" width="1" height="1"/>
+  <object id="636" x="12" y="8" width="1" height="1"/>
+  <object id="637" x="12" y="9" width="1" height="1"/>
+  <object id="638" x="12" y="10" width="1" height="1"/>
+  <object id="639" x="12" y="11" width="1" height="1"/>
+  <object id="640" x="16" y="10" width="1" height="1"/>
+  <object id="641" x="16" y="11" width="1" height="1"/>
+  <object id="642" x="15" y="11" width="1" height="1"/>
+  <object id="643" x="4" y="6" width="1" height="1"/>
+  <object id="644" x="4" y="7" width="1" height="1"/>
+  <object id="645" x="4" y="8" width="1" height="1"/>
+  <object id="646" x="4" y="9" width="1" height="1"/>
+  <object id="647" x="4" y="10" width="1" height="1"/>
+  <object id="648" x="4" y="11" width="1" height="1"/>
+  <object id="649" x="4" y="15" width="1" height="1"/>
+  <object id="650" x="5" y="15" width="1" height="1"/>
+  <object id="651" x="6" y="15" width="1" height="1"/>
+  <object id="652" x="7" y="15" width="1" height="1"/>
+  <object id="653" x="8" y="15" width="1" height="1"/>
+  <object id="654" x="9" y="15" width="1" height="1"/>
+  <object id="655" x="10" y="15" width="1" height="1"/>
+  <object id="656" x="11" y="15" width="1" height="1"/>
+  <object id="657" x="12" y="15" width="1" height="1"/>
+  <object id="658" x="12" y="14" width="1" height="1"/>
+  <object id="659" x="12" y="13" width="1" height="1"/>
+  <object id="660" x="12" y="12" width="1" height="1"/>
+  <object id="671" x="5" y="5" width="1" height="1"/>
+  <object id="672" x="6" y="4" width="1" height="1"/>
+  <object id="673" x="5" y="3" width="1" height="1"/>
+  <object id="674" x="36" y="20" width="1" height="1"/>
+  <object id="675" x="39" y="19" width="1" height="1"/>
+  <object id="676" x="26" y="20" width="1" height="1"/>
+  <object id="677" x="35" y="20" width="1" height="1"/>
+  <object id="678" x="25" y="20" width="1" height="1"/>
+  <object id="679" x="39" y="17" width="1" height="1"/>
+  <object id="680" x="37" y="20" width="1" height="1"/>
+  <object id="681" x="34" y="20" width="1" height="1"/>
+  <object id="682" x="23" y="20" width="1" height="1"/>
+  <object id="683" x="31" y="20" width="1" height="1"/>
+  <object id="684" x="32" y="20" width="1" height="1"/>
+  <object id="685" x="39" y="20" width="1" height="1"/>
+  <object id="686" x="29" y="20" width="1" height="1"/>
+  <object id="687" x="22" y="20" width="1" height="1"/>
+  <object id="688" x="28" y="20" width="1" height="1"/>
+  <object id="689" x="24" y="20" width="1" height="1"/>
+  <object id="691" x="38" y="20" width="1" height="1"/>
+  <object id="692" x="21" y="20" width="1" height="1"/>
+  <object id="693" x="30" y="20" width="1" height="1"/>
+  <object id="694" x="39" y="18" width="1" height="1"/>
+  <object id="695" x="33" y="20" width="1" height="1"/>
+  <object id="696" x="27" y="20" width="1" height="1"/>
+  <object id="697" x="28" y="0" width="1" height="1"/>
+  <object id="698" x="32" y="0" width="1" height="1"/>
+  <object id="699" x="27" y="0" width="1" height="1"/>
+  <object id="700" x="31" y="0" width="1" height="1"/>
+  <object id="701" x="38" y="0" width="1" height="1"/>
+  <object id="702" x="33" y="0" width="1" height="1"/>
+  <object id="703" x="25" y="0" width="1" height="1"/>
+  <object id="704" x="35" y="0" width="1" height="1"/>
+  <object id="705" x="30" y="0" width="1" height="1"/>
+  <object id="706" x="36" y="0" width="1" height="1"/>
+  <object id="707" x="22" y="0" width="1" height="1"/>
+  <object id="708" x="39" y="0" width="1" height="1"/>
+  <object id="709" x="24" y="0" width="1" height="1"/>
+  <object id="710" x="21" y="0" width="1" height="1"/>
+  <object id="711" x="29" y="0" width="1" height="1"/>
+  <object id="712" x="26" y="0" width="1" height="1"/>
+  <object id="713" x="23" y="0" width="1" height="1"/>
+  <object id="714" x="37" y="0" width="1" height="1"/>
+  <object id="715" x="34" y="0" width="1" height="1"/>
+  <object id="735" x="39" y="13" width="1" height="1"/>
+  <object id="736" x="39" y="3" width="1" height="1"/>
+  <object id="737" x="39" y="14" width="1" height="1"/>
+  <object id="738" x="39" y="2" width="1" height="1"/>
+  <object id="739" x="39" y="11" width="1" height="1"/>
+  <object id="740" x="39" y="12" width="1" height="1"/>
+  <object id="741" x="39" y="9" width="1" height="1"/>
+  <object id="742" x="39" y="16" width="1" height="1"/>
+  <object id="743" x="39" y="8" width="1" height="1"/>
+  <object id="744" x="39" y="4" width="1" height="1"/>
+  <object id="745" x="39" y="15" width="1" height="1"/>
+  <object id="746" x="39" y="10" width="1" height="1"/>
+  <object id="747" x="39" y="7" width="1" height="1"/>
+  <object id="748" x="39" y="5" width="1" height="1"/>
+  <object id="749" x="39" y="1" width="1" height="1"/>
+  <object id="750" x="39" y="6" width="1" height="1"/>
+  <object id="751" x="27" y="10" width="1" height="1"/>
+  <object id="752" x="30" y="12" width="1" height="1"/>
+  <object id="753" x="34" y="9" width="1" height="1"/>
+  <object id="754" x="23" y="8" width="1" height="1"/>
+  <object id="755" x="23" y="5" width="1" height="1"/>
  </objectgroup>
  <objectgroup name="markers">
-  <object id="289" name="player_spawn" x="7" y="12" width="1" height="1"/>
-  <object id="519" name="dummy_marker" x="14" y="9" width="1" height="1"/>
+  <object id="289" name="player_spawn" x="5" y="17" width="1" height="1"/>
+  <object id="519" name="dummy_marker" x="13" y="8" width="1" height="1"/>
+  <object id="662" name="dummy_marker" x="4" y="4" width="1" height="1"/>
+  <object id="665" name="dummy_marker" x="15" y="10" width="1" height="1"/>
+  <object id="669" name="dummy_marker" x="16" y="3" width="1" height="1"/>
+  <object id="670" name="dummy_marker" x="7" y="10" width="1" height="1"/>
+  <object id="757" name="npc_spawn" type="npc" x="27" y="6" width="1" height="1">
+   <properties>
+    <property name="Angle" type="float" value="90"/>
+    <property name="Detector" type="bool" value="true"/>
+    <property name="Radius" type="float" value="3"/>
+   </properties>
+  </object>
+  <object id="759" name="npc_spawn" type="npc" x="33" y="6" width="1" height="1">
+   <properties>
+    <property name="Angle" type="float" value="90"/>
+    <property name="Detector" type="bool" value="true"/>
+    <property name="Radius" type="float" value="3"/>
+   </properties>
+  </object>
+  <object id="760" name="npc_spawn" type="npc" x="28" y="2" width="1" height="1">
+   <properties>
+    <property name="Angle" type="float" value="90"/>
+    <property name="Detector" type="bool" value="true"/>
+    <property name="Radius" type="float" value="3"/>
+   </properties>
+  </object>
+  <object id="761" name="npc_spawn" type="npc" x="33" y="14" width="1" height="1">
+   <properties>
+    <property name="Angle" type="float" value="90"/>
+    <property name="Detector" type="bool" value="true"/>
+    <property name="Radius" type="float" value="3"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

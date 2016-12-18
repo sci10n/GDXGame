@@ -7,6 +7,9 @@ public class Velocity extends Component{
 
     public Vector3 velocity;
     
+    public Velocity(){
+	velocity = new Vector3();
+    }
     public void create(Vector3 velocity){
 	this.velocity = velocity;
     }

@@ -1,25 +1,9 @@
 package me.sciion.gdx.netcode;
 
-import java.io.IOException;
-import java.util.Hashtable;
-
-import com.badlogic.gdx.math.Vector3;
-import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Server;
-import com.esotericsoftware.minlog.Log;
-
-import me.sciion.gdx.level.ServerLevel;
-import me.sciion.gdx.level.components.SpatialComponent;
-import me.sciion.gdx.utils.EntityType;
-import me.sciion.gdx.utils.KryoMessage.EntityCreated;
-import me.sciion.gdx.utils.KryoMessage.EntityDelete;
-import me.sciion.gdx.utils.KryoMessage.EntityMessage;
-import me.sciion.gdx.utils.KryoMessage.EntitySync;
-import me.sciion.gdx.utils.KryoMessage.NetworkMessage;
 
 public class ServerKryo extends Listener {
-
+/*
     private Server server;
 
     private ServerLevel level;
@@ -217,5 +201,5 @@ public class ServerKryo extends Listener {
 	return channels.dequeueOutbound();
     }
 
-
+*/
 }

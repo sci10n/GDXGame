@@ -17,18 +17,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-import me.sciion.gdx.level.components.CollisionComponent;
-import me.sciion.gdx.level.components.ModelComponent;
-import me.sciion.gdx.level.components.NetworkedInput;
-import me.sciion.gdx.level.components.PlayerInputComponent;
-import me.sciion.gdx.level.components.SpatialComponent;
 import me.sciion.gdx.level.system.AutoInputSystem;
 import me.sciion.gdx.level.system.CollisionResolvingSystem;
 import me.sciion.gdx.level.system.HealthSystem;
 import me.sciion.gdx.level.system.NetworkInputSystem;
 import me.sciion.gdx.level.system.PhysicsSystem;
 import me.sciion.gdx.level.system.PlayerInputSystem;
-import me.sciion.gdx.level.system.ProjectileSystem;
 import me.sciion.gdx.level.system.RenderSystem;
 import me.sciion.gdx.netcode.Channels;
 import me.sciion.gdx.netcode.ClientKryo;
@@ -41,7 +35,7 @@ import me.sciion.gdx.utils.KryoMessage.EntityCreated;
 import me.sciion.gdx.utils.KryoMessage.EntityDelete;
 import me.sciion.gdx.utils.KryoMessage.EntityInput;
 import me.sciion.gdx.utils.KryoMessage.EntityMessage;
-
+/*
 public class ClientLevel extends Channels {
 
     private PlayerInputSystem pis;
@@ -263,4 +257,6 @@ public class ClientLevel extends Channels {
  	    npc_spawn.process(o);
  	}
      }
+   
 }
+ */

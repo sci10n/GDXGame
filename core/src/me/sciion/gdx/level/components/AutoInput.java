@@ -1,31 +1,20 @@
 package me.sciion.gdx.level.components;
 
 import com.artemis.Component;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
+
+import me.sciion.gdx.utils.Behaviors;
 
 public class AutoInput extends Component{
 
-    // If -1, wander
-    public int targetEntity;
+    public Behaviors behavior = Behaviors.WANDERING;
+    public float ellapsedTime = 3;
+    public Vector3 direction;
     
-    public final float MAX_DELTA;
-    // Counter in seconds
-    public float currentTime;
-    
-    // Target value for counter in seconds
-    public float targetTime;
-    public float idleTime;
-    public boolean idling = true;
     public AutoInput(){
-	targetEntity = -1;
-	currentTime = 0;
-	targetTime = MathUtils.random(1, 2f);
-	idleTime = MathUtils.random(2,4);
-	MAX_DELTA = 2.0f;
+	direction = new Vector3();
     }
     
-    public void create(int target){
-	this.targetEntity = target;
-    }
+
     
 }

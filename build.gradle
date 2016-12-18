@@ -69,6 +69,7 @@ project(":core") {
 		compile ("com.esotericsoftware:kryonet:2.22.0-RC1") {
 		     exclude module : 'kryo'
 		}
+		compile group: 'org.python', name: 'jython-standalone', version: '2.5.2'
     }
 }
 

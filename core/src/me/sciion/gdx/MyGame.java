@@ -1,11 +1,11 @@
 package me.sciion.gdx;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
-import me.sciion.gdx.level.ClientLevel;
 import me.sciion.gdx.level.ServerLevel;
 import me.sciion.gdx.netcode.ClientKryo;
 import me.sciion.gdx.netcode.ServerKryo;
@@ -13,7 +13,7 @@ import me.sciion.gdx.netcode.ServerKryo;
 public class MyGame extends ApplicationAdapter {
 
     ServerLevel serverLevel;
-    ClientLevel clientLevel;
+  //  ClientLevel clientLevel;
     ClientKryo client;
     ServerKryo server;
     
@@ -33,38 +33,43 @@ public class MyGame extends ApplicationAdapter {
 	    serverLevel = new ServerLevel();
 	    serverLevel.load(levelMap);
 	    serverLevel.setup(server);
-	    server.setup(serverLevel);
+	    //server.setup(serverLevel);
 	} 
-	else {
+	/*else {
 	    client = new ClientKryo();
 	    clientLevel = new ClientLevel();
 	    clientLevel.load(levelMap);
 	    clientLevel.setup(client);
 	    client.setup(serverIP, clientLevel);
 	}
+	*/
     }
     
     @Override
     public void render() {
 	//System.out.println(Gdx.graphics.getFramesPerSecond());
+	/*
 	if(server != null){
 	    server.processInbound();
 	}
 	if(client != null){
 	    client.processInbound();
 	}
+	*/
 	if(serverLevel != null){
 	    serverLevel.process();
 	}
-	if(clientLevel != null){
-	    clientLevel.process();
-	}
+	//if(clientLevel != null){
+	//    clientLevel.process();
+	//}
+	/*
 	if(server != null){
 	    server.processOutbound();
 	}
 	if(client != null){
 	    client.processOutbound();
 	}
+	*/
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.sciion.gdx.level.system;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 
@@ -15,13 +16,15 @@ import me.sciion.gdx.utils.KryoMessage.Input;
 
 public class NetworkInputSystem extends IteratingSystem {
 
+    @Wire
+    private Channels channels;
+    
     private ComponentMapper<Network> nm;
     private ComponentMapper<Spatial> sm;
     private ComponentMapper<Physics> cm;
-    private Channels channels;
-    public NetworkInputSystem(Channels channels) {
+    
+    public NetworkInputSystem() {
 	super(Aspect.all(Network.class, Spatial.class));
-	this.channels = channels;
     }
 
     @Override

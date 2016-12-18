@@ -1,0 +1,9 @@
+uniform float screenWidth;
+uniform float screenHeight;
+uniform vec2 playerLocation;
+void main()
+{
+	vec2 screenSize = vec2(gl_FragCoord.x/screenWidth,gl_FragCoord.y/screenHeight);
+	float d = exp(-distance(vec2(0.5,0.5), screenSize));
+    gl_FragColor = gl_FragColor * d;
+}

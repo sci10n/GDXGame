@@ -2,6 +2,7 @@ package me.sciion.gdx.level.system;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 
 import me.sciion.gdx.level.components.Health;
@@ -10,11 +11,12 @@ import me.sciion.gdx.utils.KryoMessage.EntityDelete;
 
 public class HealthSystem extends IteratingSystem{
 
-    ComponentMapper<Health> hm;
+    @Wire
     private Channels channels;
-    public HealthSystem(Channels channels) {
+
+    private ComponentMapper<Health> hm;
+    public HealthSystem() {
 	super(Aspect.all(Health.class));
-	this.channels = channels;
     }
 
     @Override
