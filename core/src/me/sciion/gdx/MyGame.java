@@ -35,7 +35,8 @@ public class MyGame extends ApplicationAdapter {
 	    serverLevel.setup(server);
 	    //server.setup(serverLevel);
 	} 
-	/*else {
+	/*
+	 * else {
 	    client = new ClientKryo();
 	    clientLevel = new ClientLevel();
 	    clientLevel.load(levelMap);

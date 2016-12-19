@@ -1,37 +1,23 @@
 package me.sciion.gdx.level.system;
 
-import java.awt.Dialog.ModalExclusionType;
-
-import com.artemis.Archetype;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.EntityId;
 import com.artemis.annotations.Wire;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.RayCastCallback;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import me.sciion.gdx.level.LevelGlobals;
-import me.sciion.gdx.level.components.Cooldown;
-import me.sciion.gdx.level.components.Physics;
 import me.sciion.gdx.level.components.PlayerInput;
 import me.sciion.gdx.level.components.Spatial;
 import me.sciion.gdx.level.components.Velocity;
 import me.sciion.gdx.netcode.Channels;
 import me.sciion.gdx.utils.InputUtils;
-import me.sciion.gdx.utils.ModelConstructer;
 import me.sciion.gdx.utils.PhysicsUtils;
 import me.sciion.gdx.utils.RayTraceEntityFinderReflect;
 import me.sciion.gdx.utils.RaytraceEntityFinder;
 import me.sciion.gdx.utils.KryoMessage.EntityInput;
-import net.dermetfan.utils.Pair;
 
 public class PlayerInputSystem extends IteratingSystem {
     

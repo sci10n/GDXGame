@@ -1,17 +1,17 @@
 package me.sciion.gdx.level;
 
-import java.lang.reflect.GenericArrayType;
 import java.util.Hashtable;
 
 import com.artemis.Component;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
-import com.artemis.managers.TagManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalMaterial;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -21,7 +21,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import me.sciion.gdx.level.components.Collision;
-import me.sciion.gdx.level.components.Cooldown;
+import me.sciion.gdx.level.components.DecalComponent;
 import me.sciion.gdx.level.components.Detector;
 import me.sciion.gdx.level.components.Health;
 import me.sciion.gdx.level.components.Model;
@@ -29,7 +29,6 @@ import me.sciion.gdx.level.components.Physics;
 import me.sciion.gdx.level.components.Spatial;
 import me.sciion.gdx.level.system.AutoInputSystem;
 import me.sciion.gdx.level.system.CollisionResolvingSystem;
-import me.sciion.gdx.level.system.CooldownSystem;
 import me.sciion.gdx.level.system.LineOfSightSystem;
 import me.sciion.gdx.level.system.PhysicsSystem;
 import me.sciion.gdx.level.system.PlayerInputSystem;
@@ -74,7 +73,7 @@ public class ServerLevel extends Channels {
 	markers = new Hashtable<String, Integer>();
 	globals = new LevelGlobals();
 	WorldConfiguration world_config = new WorldConfigurationBuilder()
-		.with(new PlayerInputSystem(), new RenderSystem(), new PhysicsSystem(), new CooldownSystem(),
+		.with(new PlayerInputSystem(), new RenderSystem(), new PhysicsSystem(),
 			new CollisionResolvingSystem(), new AutoInputSystem(), new LineOfSightSystem())
 		.build().register(globals);
 	world = new World(world_config);
@@ -90,10 +89,15 @@ public class ServerLevel extends Channels {
 	;
 	getComponent(Spatial.class, playerId).create(position.x, position.y, position.z, dimension.x, dimension.y,dimension.z);
 	Texture t = new Texture(Gdx.files.internal("dummy3.png"));
+	
 	getComponent(Model.class, playerId).instance = ModelConstructer.create(dimension.x, dimension.y, dimension.z,Color.WHITE, t);
+	addComponent(DecalComponent.class, playerId).decal = ModelConstructer.createProgressBar(0, 0, 0, 100, 10, 50, 100, Color.BLUE);
+	getComponent(DecalComponent.class, playerId).offset = new Vector3(0,1.2f,0);
+	getComponent(DecalComponent.class, playerId).decal.setDimensions(1.0f, 0.2f);
+	
 	PhysicsSystem ps = world.getSystem(PhysicsSystem.class);
 	addComponent(Collision.class, playerId);
-	Body b = PhysicsUtils.createBody(ps.getPhysicsWorld(), position.x, position.z, dimension.x, dimension.z,BodyType.DynamicBody, false, playerId);
+	Body b = PhysicsUtils.createBody(ps.getPhysicsWorld(), position.x, position.z,0.5f,BodyType.DynamicBody, false, playerId);
 	getComponent(Physics.class, playerId).create(b);
 	globals.focusEntity = playerId;
 	// System.out.println("Player id: " + playerId);
@@ -126,114 +130,7 @@ public class ServerLevel extends Channels {
     public void processInbound() {
 	EntityMessage message = (EntityMessage) dequeueInbound();
 	while (message != null) {
-	    // ----------------
-	    // if(message instanceof EntityCreated){
-	    // switch(((EntityCreated) message).type){
-	    // case NPC:
-	    // {
-	    // Vector3 spawnPosition = ((EntityCreated) message).poistion;
-	    // //getComponent(SpatialComponent.class,
-	    // markers.get("player_spawn")).position;
-	    // Vector3 dimensions = new Vector3(0.8f,1.0f,0.8f);
-	    // int internal = world.create(archetypes.npc);
-	    // getComponent(SpatialComponent.class,
-	    // internal).create(spawnPosition.cpy(), dimensions.cpy());
-	    // //addComponent(CollisionComponent.class,
-	    // internal).create(PhysicsUtils.createBody(physics_world,spawnPosition.x,
-	    // spawnPosition.z, dimensions.x, dimensions.z,
-	    // BodyType.DynamicBody));
-	    // int external = server.registerEntity(internal, spawnPosition,
-	    // message.owner);
-	    // RandomXS128 r = new RandomXS128(external);
-	    // getComponent(ModelComponent.class,internal).instance =
-	    // ModelConstructer.create(dimensions.x,dimensions.y,dimensions.z,
-	    // new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1.0f));
-	    //
-	    // }
-	    // break;
-	    // case NETWORKED:
-	    // {
-	    // Vector3 spawnPosition = ((EntityCreated) message).poistion;
-	    // //getComponent(SpatialComponent.class,
-	    // markers.get("player_spawn")).position;
-	    // Vector3 dimensions = ((EntityCreated) message).dimensions;
-	    // int internal = world.create(archetypes.networked);
-	    // getComponent(SpatialComponent.class,
-	    // internal).create(spawnPosition.cpy(), dimensions.cpy());
-	    // Body b =
-	    // PhysicsUtils.createBody(ps.getPhysicsWorld(),spawnPosition.x,
-	    // spawnPosition.z, dimensions.x, dimensions.z,
-	    // BodyType.KinematicBody, true);
-	    // b.setUserData(internal);
-	    // addComponent(CollisionComponent.class, internal).create(b );
-	    // int external = server.registerEntity(internal, spawnPosition,
-	    // message.owner);
-	    // RandomXS128 r = new RandomXS128(external);
-	    // getComponent(ModelComponent.class,internal).instance =
-	    // ModelConstructer.create(dimensions.x,dimensions.y,dimensions.z,
-	    // new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1.0f));
-	    // addComponent(HealthComponent.class, internal).create(100, 100);
-	    //
-	    // }
-	    // break;
-	    // case PLAYER:
-	    // {
-	    // Vector3 spawnPosition = ((EntityCreated) message).poistion;
-	    // //getComponent(SpatialComponent.class,
-	    // markers.get("player_spawn")).position;
-	    // Vector3 dimensions = new Vector3(0.8f,1.0f,0.8f);
-	    // int internal = world.create(archetypes.player);
-	    // getComponent(SpatialComponent.class,
-	    // internal).create(spawnPosition.cpy(), dimensions.cpy());
-	    //
-	    // Body b =
-	    // PhysicsUtils.createBody(ps.getPhysicsWorld(),spawnPosition.x,
-	    // spawnPosition.z, dimensions.x, dimensions.z,
-	    // BodyType.KinematicBody,false);
-	    // b.setUserData(internal);
-	    // addComponent(CollisionComponent.class, internal).create(b);
-	    // addComponent(HealthComponent.class, internal).create(100, 100);
-	    // int external = server.registerEntity(internal, spawnPosition,
-	    // message.owner);
-	    // RandomXS128 r = new RandomXS128(external);
-	    // getComponent(ModelComponent.class,internal).instance =
-	    // ModelConstructer.create(dimensions.x,dimensions.y,dimensions.z,
-	    // new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1.0f));
-	    // if(entityFocus == -1){
-	    // entityFocus = internal;
-	    // }
-	    //
-	    // }
-	    // break;
-	    // case STATIC:
-	    //
-	    // break;
-	    // }
-	    // } else if(message instanceof EntityDelete){
-	    // if(!server.isRegistered(message.id)){
-	    // System.err.println("Entity " + message.id + " not on server!");
-	    // }
-	    // else{
-	    // int internal = server.getInternal(message.id);
-	    // world.delete(internal);
-	    // server.unregisterEntity(internal);
-	    // }
-	    // } else if(message instanceof EntityInput){
-	    // if(!server.isRegistered(message.id)){
-	    // System.err.println("Entity " + message.id + " not on server!");
-	    // }
-	    // else{
-	    // EntityInput input = ((EntityInput)message);
-	    // int internal = server.getInternal(message.id);
-	    // getComponent(NetworkedInput.class,
-	    // internal).inbound.addLast(message);
-	    // if(input.type == Input.ACTIVATE){
-	    // Vector3 v = InputUtils.playerMouse();
-	    // v.sub(input.position.x,0, input.position.z);
-	    // }
-	    // }
-	    // }
-	    // ----------------
+	    
 	    message = (EntityMessage) dequeueInbound();
 	}
     }
@@ -308,8 +205,11 @@ public class ServerLevel extends Channels {
 		Texture t = new Texture(Gdx.files.internal("tile.png"));
 		getComponent(Spatial.class, s).create(x, 0, z, 1.0f, 1, 1.0f);
 		addComponent(Model.class, s).instance = ModelConstructer.create(1.0f, 1, 1.0f, Color.BROWN, t);
+		addComponent(DecalComponent.class, s).decal = ModelConstructer.createProgressBar(0, 0, 0, 100, 8, 50, 100, Color.BLUE);
+		getComponent(DecalComponent.class, s).offset = new Vector3(0,1.2f,0);
+		getComponent(DecalComponent.class, s).decal.setDimensions(1.0f, 0.2f);
 		com.badlogic.gdx.physics.box2d.World ps = world.getSystem(PhysicsSystem.class).getPhysicsWorld();
-		Body b = PhysicsUtils.createBody(ps, x, z, 1.0f, 1.0f, BodyType.DynamicBody, false, s);
+		Body b = PhysicsUtils.createBody(ps, x, z, 0.5f, BodyType.DynamicBody, false, s);
 		addComponent(Physics.class, s).create(b);
 		addComponent(Health.class, s).create(100, 100);
 		if (detector) {
@@ -338,15 +238,9 @@ public class ServerLevel extends Channels {
 		PhysicsUtils.createCircularSensor(b, 6.0f, MathUtils.PI / .5f);
 		addComponent(Physics.class, s).create(b);
 		addComponent(Health.class, s).create(100, 100);
-		addComponent(Detector.class, s).create(6,false);
+		addComponent(Detector.class, s).create(6,true);
 		
 		addComponent(Collision.class, s);
-		addComponent(Cooldown.class, s).create((id, world) ->{
-		    Detector detector = world.getMapper(Detector.class).get(id);
-		    detector.active = true;
-		    System.out.println("Trigger!");
-		    return 5.0f;
-		}, 5.0f);
 	    }
 	};
 

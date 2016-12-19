@@ -31,6 +31,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 import me.sciion.gdx.level.LevelGlobals;
+import me.sciion.gdx.level.components.DecalComponent;
 import me.sciion.gdx.level.components.Model;
 import me.sciion.gdx.level.components.Spatial;
 import me.sciion.gdx.level.components.Velocity;
@@ -45,6 +46,7 @@ public class RenderSystem extends EntitySystem {
 
     private ComponentMapper<Spatial> sm;
     private ComponentMapper<Model> mm;
+    private ComponentMapper<DecalComponent> cm;
     private ComponentMapper<Velocity> vm;
     
     private PerspectiveCamera camera;
@@ -65,8 +67,9 @@ public class RenderSystem extends EntitySystem {
     
     private Mesh lightOverlay;
     private ShaderProgram shaderProgram;
+    @SuppressWarnings("unchecked")
     public RenderSystem() {
-	super(Aspect.all(Model.class, Spatial.class));
+	super(Aspect.all(Spatial.class).one(Model.class,DecalComponent.class));
 	camera = new PerspectiveCamera(65, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	camera.position.set(0, 8.0f, 0);
 	camera.lookAt(0, 0, 0.5f);
@@ -125,24 +128,24 @@ public class RenderSystem extends EntitySystem {
 
 	batch.begin(camera);
 	for (Entity e : getEntities()) {
-	    if (mm.get(e).decal != null) {
-		Decal decal = mm.get(e).decal;
-		decal.setPosition(sm.get(e).position.cpy().add(0, 0.1f, 0));
-		decal.setDimensions(1, 1);
+	    if (cm.getSafe(e) != null) {
+		Spatial s = sm.get(e);
+		Decal decal = cm.get(e).decal;
+		decal.setPosition(s.position.cpy().add(cm.get(e).offset));
 		decal.lookAt(camera.position, camera.up);
-		decal_batch.add(mm.get(e).decal);
+		decal_batch.add(decal);
 	    }
-	    if (mm.get(e).instance != null) {
+	    if (mm.getSafe(e) != null) {
 		Spatial s = sm.get(e);
 		Model m = mm.get(e);
-		m.instance.transform.setToTranslation(s.position);
+		m.instance.transform.setToTranslation(s.position.cpy().add(mm.get(e).offset));
 		m.instance.transform.rotateRad(new Vector3(0,1,0), s.rads);
 		batch.render(m.instance, environemnt);
 
 	    }
 	}
 	batch.render(dummyModel2);
-	batch.render(dummyModel);
+	//batch.render(dummyModel);
 	batch.end();
 	decal_batch.flush();
 	

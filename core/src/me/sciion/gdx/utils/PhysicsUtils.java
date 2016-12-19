@@ -1,10 +1,12 @@
 package me.sciion.gdx.utils;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -37,6 +39,27 @@ public class PhysicsUtils {
 
     private static int increments = 7;
 
+    public static Body createBody(World world, float x, float z, float radius, BodyType type, boolean sensor, Object userData) {
+	BodyDef def = new BodyDef();
+	def.type = type;
+	def.position.set(x, z);
+	Body body = world.createBody(def);
+	CircleShape shape = new CircleShape();
+	shape.setRadius(radius);
+	FixtureDef fixtureDef = new FixtureDef();
+	fixtureDef.shape = shape;
+	fixtureDef.isSensor = sensor;
+	fixtureDef.density = 1.0f;
+	Fixture f = body.createFixture(fixtureDef);
+	f.setUserData(userData);
+	body.setUserData(userData);
+	shape.dispose();
+	body.setFixedRotation(true);
+	if(type == BodyType.DynamicBody && !sensor)
+	    body.setSleepingAllowed(false);
+	return body;
+    }
+    
     public static Fixture createCircularSensor(Body parent,float radius, float angle) {
 	PolygonShape shape = new PolygonShape();
 	float[] indices = new float[(1+increments ) * 2];

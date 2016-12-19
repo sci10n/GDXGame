@@ -17,10 +17,13 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
 
 public class ModelConstructer {
@@ -123,6 +126,29 @@ public class ModelConstructer {
 		      ((-w/2.0f)+x), y,(( d/2.0f)+z),0,1,0
 	     });
 	     return mesh;
+    }
+    
+    public static Decal createProgressBar(float x, float y, float z, int w, int h, float progress, float max, Color color){
+	FrameBuffer buffer = new FrameBuffer(Format.RGBA8888,w,h,false);
+	ShapeRenderer sr = new ShapeRenderer();
+	SpriteBatch batch = new SpriteBatch();
+	OrthographicCamera camera = new OrthographicCamera(w, h);
+	batch.setProjectionMatrix(camera.combined);
+	sr.setProjectionMatrix(camera.combined);
+	buffer.begin();
+	Gdx.gl.glClearColor(0.0f, 0, 0, 0.0f);
+	Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+	float ppp = ((float)w) / max;
+	sr.begin(ShapeType.Filled);
+	sr.setColor(Color.RED);
+	sr.rect(-w/2,-h/2,ppp*progress,h);
+	sr.end();
+	sr.begin(ShapeType.Line);
+	sr.setColor(Color.BLACK);
+	sr.rect(-w/2+1,-h/2+1,w-1,h-1);
+	sr.end();
+	buffer.end();
+	return Decal.newDecal(new TextureRegion(buffer.getColorBufferTexture()));
     }
     
     public static TextureRegion createText(String text) {

@@ -2,16 +2,14 @@ package me.sciion.gdx.level.components;
 
 import com.artemis.Component;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.math.Vector3;
 
 public class Model extends Component{
 
-    enum Type{
-	Model, Decal
-    }
-    
-   public Type type;
    public ModelInstance instance;
-   public Decal decal;
+   public Vector3 offset;
    
+   public Model(){
+       offset = new Vector3();
+   }
 }
