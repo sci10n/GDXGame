@@ -1,6 +1,8 @@
 package me.sciion.gdx.utils;
 
+import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.utils.CircularBuffer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Mesh;
@@ -18,15 +20,23 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
-public class ModelConstructer {
+import me.sciion.gdx.level.LevelGlobals;
+import me.sciion.gdx.level.components.Spatial;
+import net.dermetfan.utils.Pair;
+
+public class RenderUtils {
 
     public static ModelInstance create(float w, float h, float d, Color color, Texture texture){
         
@@ -114,6 +124,39 @@ public class ModelConstructer {
         }
     }
     
+    public static ModelInstance createMesh(World world,com.artemis.World world2,  float x, float y, float z, float distance, int numRays, LevelGlobals globals) {
+
+	Array<Vector3> positions = new Array<Vector3>();
+	float angle = MathUtils.PI2 / (float) numRays;
+	System.out.println(angle);
+	ComponentMapper<Spatial> pm = world2.getMapper(Spatial.class);
+	for (int i = 0; i < numRays; i++) {
+	    float tx = x + MathUtils.cos(angle * i) * distance;
+	    float tz = z + MathUtils.sin(angle * i) * distance;
+	    RaytraceEntityFinder finder = new RaytraceEntityFinder(new Vector3(tx, 0.0f, tz));
+	    PhysicsUtils.rayCast(world, finder, x, z, tx, tz);
+	   // globals.rays.add(new Pair<>(new Vector3(x, y, z), finder.getTargetPoint()));
+	    if(finder.getTarget() == -1)
+		positions.add(finder.getTargetPoint());
+	    else
+		positions.add(finder.getTargetPoint());
+	}
+	    positions.add(positions.first());
+
+	ModelBuilder build = new ModelBuilder();
+	Material material;
+	material = new Material(ColorAttribute.createDiffuse(Color.WHITE));
+	build.begin();
+	MeshPartBuilder meshBuilder;
+	for (int i = positions.size-1; i > 0; i--) {
+	    meshBuilder = build.part("py"+i, GL30.GL_TRIANGLES, Usage.Position , material);
+	    meshBuilder.triangle(new Vector3(x,y,z),positions.get(i), positions.get(i-1));	   
+	}
+	
+	Model model = build.end();
+	return new ModelInstance(model);
+    }
+
     public static Mesh createMesh(float x, float y, float z, float w, float d){
 	     //Material material =  new Material(ColorAttribute.createDiffuse(color));
 	     Mesh mesh = new Mesh(true, 4, 0, 

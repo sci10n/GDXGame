@@ -24,8 +24,14 @@ public class CollisionResolvingSystem extends BaseEntitySystem implements Contac
 	Integer ida = (Integer) contact.getFixtureA().getBody().getUserData();
 	Integer idb = (Integer) contact.getFixtureB().getBody().getUserData();
 	if (ida != null && idb != null) {
-	    cm.get(ida).currentCollisions.add(idb);
-	    cm.get(idb).currentCollisions.add(ida);
+	    Collision ca = cm.getSafe(ida);
+	    Collision cb = cm.getSafe(idb);
+	    if(ca != null){
+		cm.get(ida).currentCollisions.add(idb);
+	    }
+	    if(cb != null){
+		    cm.get(idb).currentCollisions.add(ida);
+	    }
 	}
 
     }
@@ -35,8 +41,14 @@ public class CollisionResolvingSystem extends BaseEntitySystem implements Contac
 	Integer ida = (Integer) contact.getFixtureA().getBody().getUserData();
 	Integer idb = (Integer) contact.getFixtureB().getBody().getUserData();
 	if (ida != null && idb != null) {
-	    cm.get(ida).currentCollisions.removeValue(idb,false);
-	    cm.get(idb).currentCollisions.removeValue(ida,false);
+	    Collision ca = cm.getSafe(ida);
+	    Collision cb = cm.getSafe(idb);
+	    if(ca != null){
+		ca.currentCollisions.removeValue(idb,false);
+	    }
+	    if(cb != null){
+		cb.currentCollisions.removeValue(ida,false);
+	    }
 	}
     }
 

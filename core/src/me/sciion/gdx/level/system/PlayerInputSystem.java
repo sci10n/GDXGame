@@ -58,12 +58,12 @@ public class PlayerInputSystem extends IteratingSystem {
 	}
 	if (Gdx.input.isKeyPressed(Keys.SPACE)) {
 	    com.badlogic.gdx.physics.box2d.World physics_world = ps.getPhysicsWorld();
-	    RaytraceEntityFinder entityFinder = new RaytraceEntityFinder(eid);
+	    RaytraceEntityFinder entityFinder = new RaytraceEntityFinder();
 	    Vector3 origin = position.cpy();
 	    Vector3 target = origin.cpy().add(InputUtils.playerMouse().cpy().sub(origin).nor().scl(8.0f));
 	    
 	    
-	    RayTraceEntityFinderReflect er = new RayTraceEntityFinderReflect(eid, 10, physics_world, globals);
+	    RayTraceEntityFinderReflect er = new RayTraceEntityFinderReflect(10, physics_world, globals);
 	    er.rayTrace(origin, target);
 	    // == This to raycast == //
 	    if(PhysicsUtils.rayCast(physics_world, entityFinder, origin.x, origin.z, target.x, target.z)){

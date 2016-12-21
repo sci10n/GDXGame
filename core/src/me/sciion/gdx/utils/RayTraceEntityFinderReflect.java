@@ -18,15 +18,12 @@ public class RayTraceEntityFinderReflect {
     @Wire
     LevelGlobals globals;
 
-    @EntityId
-    private int sourceId;
 
     private Array<Vector3> targetPoints;
     private float range;
     private World world;
 
-    public RayTraceEntityFinderReflect(int sourceId, float range, World world, LevelGlobals globals) {
-	this.sourceId = sourceId;
+    public RayTraceEntityFinderReflect(float range, World world, LevelGlobals globals) {
 	targetPoints = new Array<Vector3>();
 	this.range = range;
 	this.world = world;
@@ -39,7 +36,7 @@ public class RayTraceEntityFinderReflect {
 	Vector3 t = target;
 	for(int i = 0; i < 10; i++){
 	    globals.rays.add(new Pair<Vector3, Vector3>(s.cpy(),t.cpy()));
-	    RaytraceEntityFinder finder = new RaytraceEntityFinder(sourceId);
+	    RaytraceEntityFinder finder = new RaytraceEntityFinder();
 	    PhysicsUtils.rayCast(world, finder, s.x, s.z, t.x,t.z);
 	    Vector3 v = finder.getTargetPoint().sub(s);
 	    Vector3 n = finder.getTargetNormal();

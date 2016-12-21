@@ -43,7 +43,7 @@ public class LineOfSightSystem extends IteratingSystem{
 	for (int i : c.currentCollisions) {
 	    // System.out.println("HELLO WORLD");
 	    com.badlogic.gdx.physics.box2d.World physics_world = ps.getPhysicsWorld();
-	    RaytraceEntityFinder entityFinder = new RaytraceEntityFinder(entityId);
+	    RaytraceEntityFinder entityFinder = new RaytraceEntityFinder();
 	    Vector3 origin = sm.get(entityId).position.cpy();
 	    Vector3 target = sm.getSafe(i).position.cpy();
 	    //if (origin.cpy().sub(target).len() > dm.get(entityId).range) {
@@ -52,10 +52,10 @@ public class LineOfSightSystem extends IteratingSystem{
 	    // == This to raycast == //
 
 	    if (PhysicsUtils.rayCast(physics_world, entityFinder, origin.x, origin.z, target.x, target.z)) {
-		if (entityFinder.getTarget() > 0) {
+		//if (entityFinder.getTarget() > 0) {
 		     globals.rays.add(new Pair<Vector3, Vector3>(origin,entityFinder.getTargetPoint()));
 		    //System.out.println("I've got the beast i nmy sight: " + entityFinder.getTarget() + " ");
-		} // System.out.println("Target " + i + " in sight from " +
+		//} // System.out.println("Target " + i + " in sight from " +
 		  // entityId);
 		// }
 	    }

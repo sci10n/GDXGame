@@ -29,7 +29,7 @@ import me.sciion.gdx.netcode.ClientKryo;
 import me.sciion.gdx.netcode.ServerKryo;
 import me.sciion.gdx.utils.Archetypes;
 import me.sciion.gdx.utils.EntityType;
-import me.sciion.gdx.utils.ModelConstructer;
+import me.sciion.gdx.utils.RenderUtils;
 import me.sciion.gdx.utils.PhysicsUtils;
 import me.sciion.gdx.utils.KryoMessage.EntityCreated;
 import me.sciion.gdx.utils.KryoMessage.EntityDelete;

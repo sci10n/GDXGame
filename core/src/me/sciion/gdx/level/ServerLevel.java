@@ -36,7 +36,7 @@ import me.sciion.gdx.level.system.RenderSystem;
 import me.sciion.gdx.netcode.Channels;
 import me.sciion.gdx.netcode.ServerKryo;
 import me.sciion.gdx.utils.Archetypes;
-import me.sciion.gdx.utils.ModelConstructer;
+import me.sciion.gdx.utils.RenderUtils;
 import me.sciion.gdx.utils.PhysicsUtils;
 import me.sciion.gdx.utils.ScriptUtils;
 import me.sciion.gdx.utils.KryoMessage.EntityMessage;
@@ -90,8 +90,8 @@ public class ServerLevel extends Channels {
 	getComponent(Spatial.class, playerId).create(position.x, position.y, position.z, dimension.x, dimension.y,dimension.z);
 	Texture t = new Texture(Gdx.files.internal("dummy3.png"));
 	
-	getComponent(Model.class, playerId).instance = ModelConstructer.create(dimension.x, dimension.y, dimension.z,Color.WHITE, t);
-	addComponent(DecalComponent.class, playerId).decal = ModelConstructer.createProgressBar(0, 0, 0, 100, 10, 50, 100, Color.BLUE);
+	getComponent(Model.class, playerId).instance = RenderUtils.create(dimension.x, dimension.y, dimension.z,Color.WHITE, t);
+	addComponent(DecalComponent.class, playerId).decal = RenderUtils.createProgressBar(0, 0, 0, 100, 10, 50, 100, Color.BLUE);
 	getComponent(DecalComponent.class, playerId).offset = new Vector3(0,1.2f,0);
 	getComponent(DecalComponent.class, playerId).decal.setDimensions(1.0f, 0.2f);
 	
@@ -149,7 +149,8 @@ public class ServerLevel extends Channels {
 		float c = 1.0f;
 		Texture t = new Texture(Gdx.files.internal("tile.png"));
 		getComponent(Spatial.class, s).create(x + w / 2.0f, 0, z + d / 2.0f, w, 0, d);
-		getComponent(Model.class, s).instance = ModelConstructer.create(w, 0, d, new Color(c, c, c, 1.0f), t);
+		getComponent(Model.class, s).instance = RenderUtils.create(w, 0, d, new Color(c, c, c, 1.0f), t);
+		
 	    }
 	}
 	for (MapObject o : structural_level.getObjects()) {
@@ -165,9 +166,10 @@ public class ServerLevel extends Channels {
 	    getComponent(Spatial.class, s).create(x, 0, z, w, h, d);
 	    float c =1.0f;
 
-	    getComponent(Model.class, s).instance = ModelConstructer.create(w, h, d, new Color(c, c, c, 1.0f), t);
+	    getComponent(Model.class, s).instance = RenderUtils.create(w, h, d, new Color(c, c, c, 1.0f), t);
 	    PhysicsSystem ps = world.getSystem(PhysicsSystem.class);
 	    getComponent(Physics.class, s).create( PhysicsUtils.createBody(ps.getPhysicsWorld(), x, z, w, d, BodyType.StaticBody, false, null));
+	
 	}
 
 	System.out.println("--===|Markers|===--");
@@ -204,8 +206,8 @@ public class ServerLevel extends Channels {
 		int s = world.create(archetypes.npc);
 		Texture t = new Texture(Gdx.files.internal("tile.png"));
 		getComponent(Spatial.class, s).create(x, 0, z, 1.0f, 1, 1.0f);
-		addComponent(Model.class, s).instance = ModelConstructer.create(1.0f, 1, 1.0f, Color.BROWN, t);
-		addComponent(DecalComponent.class, s).decal = ModelConstructer.createProgressBar(0, 0, 0, 100, 8, 50, 100, Color.BLUE);
+		addComponent(Model.class, s).instance = RenderUtils.create(1.0f, 1, 1.0f, Color.BROWN, t);
+		addComponent(DecalComponent.class, s).decal = RenderUtils.createProgressBar(0, 0, 0, 100, 8, 50, 100, Color.BLUE);
 		getComponent(DecalComponent.class, s).offset = new Vector3(0,1.2f,0);
 		getComponent(DecalComponent.class, s).decal.setDimensions(1.0f, 0.2f);
 		com.badlogic.gdx.physics.box2d.World ps = world.getSystem(PhysicsSystem.class).getPhysicsWorld();
@@ -232,7 +234,7 @@ public class ServerLevel extends Channels {
 		int s = world.create(archetypes.marker);
 		getComponent(Spatial.class, s).create(x, 0, z, 1.0f, 1, 1.0f);
 		Texture t = new Texture(Gdx.files.internal("grid2.png"));
-		addComponent(Model.class, s).instance = ModelConstructer.create(1.0f, 1, 1.0f, Color.WHITE, t);
+		addComponent(Model.class, s).instance = RenderUtils.create(1.0f, 1, 1.0f, Color.WHITE, t);
 		com.badlogic.gdx.physics.box2d.World ps = world.getSystem(PhysicsSystem.class).getPhysicsWorld();
 		Body b = PhysicsUtils.createBody(ps, x, z, 1.0f, 1.0f, BodyType.StaticBody, true, s);
 		PhysicsUtils.createCircularSensor(b, 6.0f, MathUtils.PI / .5f);

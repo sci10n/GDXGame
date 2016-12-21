@@ -11,15 +11,17 @@ public class RaytraceEntityFinder implements RayCastCallback {
 
     @EntityId
     private int target = -1;
-    @EntityId
-    private int sourceId;
+
 
     private Vector3 targetPoint;
     private Vector3 targetNormal;
     
-    public RaytraceEntityFinder(int sourceId) {
-	this.sourceId = sourceId;
+    public RaytraceEntityFinder() {
 	targetPoint = new Vector3();
+	targetNormal = new Vector3();
+    }
+    public RaytraceEntityFinder(Vector3 defaultTarget) {
+	targetPoint = defaultTarget;
 	targetNormal = new Vector3();
     }
 
